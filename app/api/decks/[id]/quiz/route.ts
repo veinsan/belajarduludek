@@ -79,14 +79,60 @@ export async function POST(request: Request, { params }: RouteContext) {
     return Response.json({ error: "Deck tidak ditemukan." }, { status: 404 });
   }
 
-  const quiz = await prisma.quiz.create({
-    data: {
-      score,
-      total,
-      deckId: id,
-      userId: session.sub,
-    },
-    select: { id: true, score: true, total: true, createdAt: true },
+  const now = new Date();
+  const startOfUTCDay = (d: Date) =>
+    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+
+  const quiz = await prisma.$transaction(async (tx) => {
+    const created = await tx.quiz.create({
+      data: {
+        score,
+        total,
+        deckId: id,
+        userId: session.sub,
+      },
+      select: { id: true, score: true, total: true, createdAt: true },
+    });
+
+    const existing = await tx.userStats.findUnique({
+      where: { userId: session.sub },
+    });
+
+    let currentStreak: number;
+    if (!existing || !existing.lastStudied) {
+      currentStreak = 1;
+    } else {
+      const diffDays = Math.round(
+        (startOfUTCDay(now) - startOfUTCDay(existing.lastStudied)) / 86_400_000
+      );
+      if (diffDays === 0) currentStreak = existing.currentStreak;
+      else if (diffDays === 1) currentStreak = existing.currentStreak + 1;
+      else currentStreak = 1;
+    }
+
+    const longestStreak = Math.max(
+      currentStreak,
+      existing?.longestStreak ?? 0
+    );
+
+    await tx.userStats.upsert({
+      where: { userId: session.sub },
+      create: {
+        userId: session.sub,
+        currentStreak,
+        longestStreak,
+        lastStudied: now,
+        totalQuizzes: 1,
+      },
+      update: {
+        currentStreak,
+        longestStreak,
+        lastStudied: now,
+        totalQuizzes: { increment: 1 },
+      },
+    });
+
+    return created;
   });
 
   return Response.json({ quiz }, { status: 201 });

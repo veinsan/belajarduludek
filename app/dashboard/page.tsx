@@ -14,19 +14,50 @@ export default async function DashboardPage() {
   const session = await getSession();
   if (!session) return null;
 
-  const decks = await prisma.deck.findMany({
-    where: { userId: session.sub },
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      _count: { select: { cards: true } },
-    },
-  });
+  const [decks, stats] = await Promise.all([
+    prisma.deck.findMany({
+      where: { userId: session.sub },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        _count: { select: { cards: true } },
+      },
+    }),
+    prisma.userStats.findUnique({
+      where: { userId: session.sub },
+      select: { currentStreak: true, totalQuizzes: true },
+    }),
+  ]);
+
+  const currentStreak = stats?.currentStreak ?? 0;
+  const totalQuizzes = stats?.totalQuizzes ?? 0;
 
   return (
     <div className="flex flex-col gap-6">
+      <section className="grid grid-cols-2 gap-3 sm:max-w-md">
+        <div className="rounded-xl border p-4">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">
+            Streak saat ini
+          </p>
+          <p className="text-2xl font-semibold tracking-tight">
+            {currentStreak}{" "}
+            <span className="text-sm font-normal text-muted-foreground">
+              hari
+            </span>
+          </p>
+        </div>
+        <div className="rounded-xl border p-4">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">
+            Total kuis
+          </p>
+          <p className="text-2xl font-semibold tracking-tight">
+            {totalQuizzes}
+          </p>
+        </div>
+      </section>
+
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Deck kamu</h1>

@@ -8,12 +8,15 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String         @id @default(cuid())
+  email     String         @unique
   name      String
   password  String
-  createdAt DateTime @default(now())
+  createdAt DateTime       @default(now())
   decks     Deck[]
+  materials Material[]
+  stats     UserStats?
+  paths     LearningPath[]
 }
 
 model Deck {
@@ -25,6 +28,7 @@ model Deck {
   user        User        @relation(fields: [userId], references: [id])
   cards       Flashcard[]
   quizzes     Quiz[]
+  pathSteps   PathStep[]
 }
 
 model Flashcard {
@@ -44,4 +48,42 @@ model Quiz {
   deckId    String
   deck      Deck       @relation(fields: [deckId], references: [id], onDelete: Cascade)
   userId    String
+}
+
+model Material {
+  id        String   @id @default(cuid())
+  title     String
+  content   String   @db.Text
+  summary   String?  @db.Text
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model UserStats {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id])
+  currentStreak Int       @default(0)
+  longestStreak Int       @default(0)
+  lastStudied   DateTime?
+  totalQuizzes  Int       @default(0)
+}
+
+model LearningPath {
+  id        String     @id @default(cuid())
+  title     String
+  createdAt DateTime   @default(now())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  steps     PathStep[]
+}
+
+model PathStep {
+  id     String       @id @default(cuid())
+  order  Int
+  pathId String
+  path   LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+  deckId String
+  deck   Deck         @relation(fields: [deckId], references: [id])
 }

@@ -77,6 +77,18 @@ export function DeckCards({
     }
   }
 
+  function handleUpdated(updated: FlashcardData) {
+    setCards((prev) =>
+      prev.map((c) => (c.id === updated.id ? updated : c))
+    );
+    router.refresh();
+  }
+
+  function handleDeleted(id: string) {
+    setCards((prev) => prev.filter((c) => c.id !== id));
+    router.refresh();
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-end">
@@ -157,7 +169,12 @@ export function DeckCards({
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2">
           {cards.map((card) => (
-            <FlashcardItem key={card.id} card={card} />
+            <FlashcardItem
+              key={card.id}
+              card={card}
+              onUpdated={handleUpdated}
+              onDeleted={handleDeleted}
+            />
           ))}
         </ul>
       )}
@@ -165,13 +182,141 @@ export function DeckCards({
   );
 }
 
-function FlashcardItem({ card }: { card: FlashcardData }) {
+function FlashcardItem({
+  card,
+  onUpdated,
+  onDeleted,
+}: {
+  card: FlashcardData;
+  onUpdated: (card: FlashcardData) => void;
+  onDeleted: (id: string) => void;
+}) {
   const [flipped, setFlipped] = React.useState(false);
+  const [editing, setEditing] = React.useState(false);
+  const [editFront, setEditFront] = React.useState(card.front);
+  const [editBack, setEditBack] = React.useState(card.back);
+  const [error, setError] = React.useState<string | null>(null);
+  const [saving, setSaving] = React.useState(false);
+  const [deleting, setDeleting] = React.useState(false);
+
+  function startEdit() {
+    setEditFront(card.front);
+    setEditBack(card.back);
+    setError(null);
+    setEditing(true);
+  }
+
+  function cancelEdit() {
+    setEditing(false);
+    setError(null);
+  }
+
+  async function onSave(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/cards/${card.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ front: editFront, back: editBack }),
+      });
+      const data = (await res.json()) as {
+        error?: string;
+        card?: FlashcardData;
+      };
+      if (!res.ok || !data.card) {
+        setError(data.error ?? "Gagal menyimpan perubahan.");
+        return;
+      }
+      onUpdated({
+        id: data.card.id,
+        front: data.card.front,
+        back: data.card.back,
+      });
+      setEditing(false);
+    } catch {
+      setError("Tidak dapat terhubung ke server.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function onDelete() {
+    setError(null);
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/cards/${card.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = (await res
+          .json()
+          .catch(() => ({}))) as { error?: string };
+        setError(data.error ?? "Gagal menghapus kartu.");
+        return;
+      }
+      onDeleted(card.id);
+    } catch {
+      setError("Tidak dapat terhubung ke server.");
+      setDeleting(false);
+    }
+  }
+
+  if (editing) {
+    return (
+      <li>
+        <Card>
+          <form onSubmit={onSave} className="flex flex-col gap-3 px-6">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor={`edit-front-${card.id}`}>Pertanyaan</Label>
+              <Input
+                id={`edit-front-${card.id}`}
+                type="text"
+                required
+                maxLength={500}
+                value={editFront}
+                onChange={(e) => setEditFront(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor={`edit-back-${card.id}`}>Jawaban</Label>
+              <Textarea
+                id={`edit-back-${card.id}`}
+                rows={3}
+                required
+                maxLength={2000}
+                value={editBack}
+                onChange={(e) => setEditBack(e.target.value)}
+              />
+            </div>
+            {error ? (
+              <p className="text-sm text-destructive" role="alert">
+                {error}
+              </p>
+            ) : null}
+            <div className="flex items-center justify-end gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={cancelEdit}
+                disabled={saving}
+              >
+                Batal
+              </Button>
+              <Button type="submit" disabled={saving}>
+                {saving ? "Menyimpan..." : "Simpan"}
+              </Button>
+            </div>
+          </form>
+        </Card>
+      </li>
+    );
+  }
+
   const faceClass =
     "absolute inset-0 flex items-center justify-center rounded-xl border bg-card text-card-foreground shadow-sm px-6 py-5 text-center [backface-visibility:hidden]";
 
   return (
-    <li>
+    <li className="flex flex-col gap-2">
       <button
         type="button"
         onClick={() => setFlipped((v) => !v)}
@@ -209,6 +354,31 @@ function FlashcardItem({ card }: { card: FlashcardData }) {
           </div>
         </div>
       </button>
+      {error ? (
+        <p className="text-sm text-destructive" role="alert">
+          {error}
+        </p>
+      ) : null}
+      <div className="flex items-center justify-end gap-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={startEdit}
+          disabled={deleting}
+        >
+          Ubah
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onDelete}
+          disabled={deleting}
+        >
+          {deleting ? "Menghapus..." : "Hapus"}
+        </Button>
+      </div>
     </li>
   );
 }
