@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
@@ -27,23 +28,50 @@ export default async function TryoutPage() {
     },
   });
 
-  const hasEligibleDecks = decks.some((d) => d.cards.length > 0);
+  const eligibleDecks = decks.filter((d) => d.cards.length > 0);
+  const totalCards = eligibleDecks.reduce(
+    (sum, d) => sum + d.cards.length,
+    0
+  );
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <Link
-          href="/dashboard"
-          className="text-xs text-muted-foreground hover:underline"
-        >
-          ← Kembali ke dashboard
-        </Link>
-        <h1 className="text-2xl font-semibold tracking-tight">Tryout</h1>
-        <p className="text-sm text-muted-foreground">
-          Gabungkan beberapa deck jadi satu kuis besar.
-        </p>
-      </div>
-      {hasEligibleDecks ? (
+    <div className="flex flex-col gap-10">
+      <section className="flex flex-col gap-5">
+        <div className="flex flex-col gap-1">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">
+            Latihan gabungan
+          </p>
+          <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">
+            Tryout
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Gabungkan beberapa deck jadi satu kuis besar — cocok untuk
+            persiapan ulangan atau UTBK.
+          </p>
+        </div>
+        {eligibleDecks.length > 0 ? (
+          <div className="grid grid-cols-2 gap-3 sm:max-w-md">
+            <div className="rounded-xl border bg-card p-4">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                Deck siap
+              </p>
+              <p className="mt-1 text-3xl font-extrabold tracking-tight text-primary">
+                {eligibleDecks.length}
+              </p>
+            </div>
+            <div className="rounded-xl border bg-card p-4">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                Total kartu
+              </p>
+              <p className="mt-1 text-3xl font-extrabold tracking-tight text-primary">
+                {totalCards}
+              </p>
+            </div>
+          </div>
+        ) : null}
+      </section>
+
+      {eligibleDecks.length > 0 ? (
         <TryoutRunner decks={decks} />
       ) : (
         <Card>
@@ -54,6 +82,11 @@ export default async function TryoutPage() {
               gabungan.
             </CardDescription>
           </CardHeader>
+          <div className="px-6 pb-6">
+            <Button asChild>
+              <Link href="/dashboard/decks/new">Buat deck pertama</Link>
+            </Button>
+          </div>
         </Card>
       )}
     </div>

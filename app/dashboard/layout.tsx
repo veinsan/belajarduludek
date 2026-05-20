@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { LogoutButton } from "@/components/logout-button";
 import { AiChat } from "@/components/ai-chat";
+import { SidebarNav } from "@/components/sidebar-nav";
 
 export default async function DashboardLayout({
   children,
@@ -14,32 +15,29 @@ export default async function DashboardLayout({
   if (!session) redirect("/login");
 
   return (
-    <div className="flex min-h-full flex-1 flex-col">
-      <header className="border-b bg-background">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-4 py-3">
-          <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="text-sm font-semibold tracking-tight">
-              BelajarDuluDek
-            </Link>
-            <nav className="flex items-center gap-4">
-              <Link
-                href="/dashboard/youtube"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                YouTube
-              </Link>
-            </nav>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">
-              Halo, <span className="text-foreground">{session.name}</span>
+    <div className="flex min-h-full flex-1 flex-col md:flex-row">
+      <aside className="flex shrink-0 flex-col gap-6 border-b bg-sidebar px-5 py-5 md:sticky md:top-0 md:h-screen md:w-60 md:border-r md:border-b-0 md:py-7">
+        <Link
+          href="/dashboard"
+          className="text-base font-extrabold tracking-tight"
+        >
+          BelajarDuluDek
+        </Link>
+        <SidebarNav />
+        <div className="mt-auto flex flex-col gap-3 border-t border-sidebar-border pt-4">
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              Masuk sebagai
             </span>
-            <LogoutButton />
+            <span className="truncate text-sm font-medium">
+              {session.name}
+            </span>
           </div>
+          <LogoutButton />
         </div>
-      </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
-        {children}
+      </aside>
+      <main className="flex-1 px-4 py-8 md:px-10 md:py-10">
+        <div className="mx-auto w-full max-w-6xl">{children}</div>
       </main>
       <AiChat />
     </div>

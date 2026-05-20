@@ -2,6 +2,13 @@ import { type NextRequest } from "next/server";
 
 import { getSession } from "@/lib/auth";
 
+const SUBJECT_QUERIES: Record<string, string> = {
+  fisika: "fisika dasar SMA",
+  biologi: "biologi dasar SMA",
+  kimia: "kimia dasar SMA",
+  matematika: "matematika SMA",
+};
+
 type YouTubeSearchResponse = {
   items?: Array<{
     id?: { kind?: string; videoId?: string };
@@ -18,11 +25,11 @@ type YouTubeSearchResponse = {
   error?: { message?: string };
 };
 
-export type YouTubeVideoResult = {
-  id: string;
+export type KelasVideo = {
+  videoId: string;
   title: string;
-  thumbnail: string;
   channelTitle: string;
+  thumbnail: string;
 };
 
 export async function GET(request: NextRequest) {
@@ -39,16 +46,11 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const q = request.nextUrl.searchParams.get("q")?.trim() ?? "";
-  if (!q) {
+  const subject = request.nextUrl.searchParams.get("subject")?.trim() ?? "";
+  const query = SUBJECT_QUERIES[subject];
+  if (!query) {
     return Response.json(
-      { error: "Parameter q wajib diisi." },
-      { status: 400 }
-    );
-  }
-  if (q.length > 200) {
-    return Response.json(
-      { error: "Kata kunci terlalu panjang." },
+      { error: "Subject tidak dikenal." },
       { status: 400 }
     );
   }
@@ -56,8 +58,8 @@ export async function GET(request: NextRequest) {
   const url = new URL("https://www.googleapis.com/youtube/v3/search");
   url.searchParams.set("part", "snippet");
   url.searchParams.set("type", "video");
-  url.searchParams.set("maxResults", "6");
-  url.searchParams.set("q", q);
+  url.searchParams.set("maxResults", "12");
+  url.searchParams.set("q", query);
   url.searchParams.set("key", apiKey);
 
   let upstream: Response;
@@ -79,19 +81,19 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const videos: YouTubeVideoResult[] = (data.items ?? [])
+  const videos: KelasVideo[] = (data.items ?? [])
     .map((item) => {
-      const id = item.id?.videoId;
+      const videoId = item.id?.videoId;
       const title = item.snippet?.title;
       const channelTitle = item.snippet?.channelTitle;
       const thumbnail =
         item.snippet?.thumbnails?.medium?.url ??
         item.snippet?.thumbnails?.high?.url ??
         item.snippet?.thumbnails?.default?.url;
-      if (!id || !title || !thumbnail || !channelTitle) return null;
-      return { id, title, thumbnail, channelTitle };
+      if (!videoId || !title || !thumbnail || !channelTitle) return null;
+      return { videoId, title, channelTitle, thumbnail };
     })
-    .filter((v): v is YouTubeVideoResult => v !== null);
+    .filter((v): v is KelasVideo => v !== null);
 
   return Response.json({ videos });
 }
