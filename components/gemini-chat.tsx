@@ -73,7 +73,7 @@ export function GeminiChat() {
   }
 
   return (
-    <Card className="flex h-[min(70vh,640px)] flex-col p-0">
+    <Card className="flex h-[min(70vh,640px)] flex-col overflow-hidden p-0 shadow-[0_24px_70px_rgba(0,0,0,0.18)]">
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-6">
         {messages.length === 0 ? (
           <div className="flex flex-col gap-5">
@@ -86,13 +86,17 @@ export function GeminiChat() {
               </p>
             </div>
             <ul className="grid gap-3 sm:grid-cols-2">
-              {SUGGESTIONS.map((suggestion) => (
-                <li key={suggestion}>
+              {SUGGESTIONS.map((suggestion, index) => (
+                <li
+                  key={suggestion}
+                  className="animate-enter-up"
+                  style={{ animationDelay: `${index * 70}ms` }}
+                >
                   <button
                     type="button"
                     onClick={() => sendMessage(suggestion)}
                     disabled={sending}
-                    className="flex h-full w-full flex-col items-start gap-1 rounded-xl border bg-card p-4 text-left text-sm transition-colors hover:border-border-strong hover:bg-elevated disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-full w-full flex-col items-start gap-1 rounded-xl border bg-card p-4 text-left text-sm transition-all hover:-translate-y-0.5 hover:border-border-strong hover:bg-elevated disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <span className="text-[10px] uppercase tracking-wider text-primary-light">
                       Saran
@@ -109,7 +113,7 @@ export function GeminiChat() {
               <li
                 key={i}
                 className={cn(
-                  "max-w-[85%] rounded-xl px-4 py-3 text-sm leading-relaxed",
+                  "animate-enter-up max-w-[85%] rounded-xl px-4 py-3 text-sm leading-relaxed",
                   msg.role === "user"
                     ? "ml-auto bg-primary text-primary-foreground"
                     : "mr-auto bg-elevated"

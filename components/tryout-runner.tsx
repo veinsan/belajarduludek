@@ -62,7 +62,7 @@ export function TryoutRunner({ decks }: { decks: DeckOption[] }) {
     const canStart = selectedCards >= QUIZ_MIN_CARDS;
 
     return (
-      <Card className="mx-auto w-full max-w-xl">
+      <Card className="animate-enter-up mx-auto w-full max-w-xl border-border-strong shadow-[0_24px_70px_rgba(0,0,0,0.18)]">
         <CardHeader>
           <CardTitle>Pilih deck untuk tryout</CardTitle>
           <CardDescription>
@@ -78,13 +78,17 @@ export function TryoutRunner({ decks }: { decks: DeckOption[] }) {
             </p>
           ) : (
             <ul className="flex flex-col gap-2">
-              {eligibleDecks.map((deck) => {
+              {eligibleDecks.map((deck, index) => {
                 const checked = selected.has(deck.id);
                 return (
-                  <li key={deck.id}>
+                  <li
+                    key={deck.id}
+                    className="animate-enter-up"
+                    style={{ animationDelay: `${index * 60}ms` }}
+                  >
                     <label
                       className={cn(
-                        "flex cursor-pointer items-start gap-3 rounded-lg border bg-background px-4 py-3 text-sm transition-colors hover:bg-muted",
+                        "flex cursor-pointer items-start gap-3 rounded-lg border bg-background px-4 py-3 text-sm transition-all hover:-translate-y-0.5 hover:bg-muted",
                         checked && "border-ring bg-muted/60"
                       )}
                     >
@@ -162,7 +166,7 @@ function RunningQuiz({
   if (finished) {
     const percentage = Math.round((score / total) * 100);
     return (
-      <Card className="mx-auto w-full max-w-xl">
+      <Card className="animate-enter-up mx-auto w-full max-w-xl border-border-strong shadow-[0_24px_70px_rgba(0,0,0,0.18)]">
         <CardHeader>
           <CardTitle>Tryout selesai</CardTitle>
           <CardDescription>
@@ -188,7 +192,7 @@ function RunningQuiz({
   }
 
   return (
-    <Card className="mx-auto w-full max-w-xl">
+    <Card key={index} className="animate-enter-up mx-auto w-full max-w-xl border-border-strong shadow-[0_24px_70px_rgba(0,0,0,0.18)]">
       <CardHeader>
         <CardDescription>
           Pertanyaan {index + 1} dari {total}
@@ -202,15 +206,19 @@ function RunningQuiz({
             const isCorrect = i === current.correctIndex;
             const isSelected = i === selected;
             return (
-              <li key={i}>
+              <li
+                key={i}
+                className="animate-enter-up"
+                style={{ animationDelay: `${i * 55}ms` }}
+              >
                 <button
                   type="button"
                   onClick={() => choose(i)}
                   disabled={answered}
                   aria-pressed={isSelected}
                   className={cn(
-                    "flex w-full items-start gap-3 rounded-lg border bg-background px-4 py-3 text-left text-sm transition-colors",
-                    "hover:bg-muted disabled:cursor-not-allowed",
+                    "flex w-full items-start gap-3 rounded-lg border bg-background px-4 py-3 text-left text-sm transition-all",
+                    "hover:-translate-y-0.5 hover:bg-muted disabled:cursor-not-allowed disabled:hover:translate-y-0",
                     answered &&
                       isCorrect &&
                       "border-emerald-500 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",

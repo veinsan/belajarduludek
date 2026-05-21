@@ -33,7 +33,6 @@ export function KelasBrowser() {
 
   React.useEffect(() => {
     let cancelled = false;
-    setLoad({ status: "loading" });
     fetch(`/api/kelas/videos?subject=${subject}`)
       .then(async (res) => {
         const data = (await res.json().catch(() => ({}))) as {
@@ -62,6 +61,12 @@ export function KelasBrowser() {
     };
   }, [subject]);
 
+  function selectSubject(nextSubject: SubjectKey) {
+    if (nextSubject === subject) return;
+    setLoad({ status: "loading" });
+    setSubject(nextSubject);
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <nav
@@ -74,12 +79,12 @@ export function KelasBrowser() {
             <button
               key={s.key}
               type="button"
-              onClick={() => setSubject(s.key)}
+              onClick={() => selectSubject(s.key)}
               className={cn(
-                "shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                "shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-all",
                 active
-                  ? "bg-primary text-primary-foreground"
-                  : "border border-border-strong bg-card text-muted-foreground hover:bg-elevated hover:text-foreground"
+                  ? "scale-[1.02] bg-primary text-primary-foreground shadow-[0_10px_28px_rgba(95,43,206,0.25)]"
+                  : "border border-border-strong bg-card text-muted-foreground hover:-translate-y-0.5 hover:bg-elevated hover:text-foreground"
               )}
             >
               {s.label}
@@ -91,7 +96,11 @@ export function KelasBrowser() {
       {load.status === "loading" ? (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <li key={i}>
+            <li
+              key={i}
+              className="animate-enter-up"
+              style={{ animationDelay: `${i * 55}ms` }}
+            >
               <Card className="overflow-hidden p-0">
                 <div className="aspect-video w-full animate-pulse bg-elevated" />
                 <div className="flex flex-col gap-2 p-4">
@@ -115,14 +124,18 @@ export function KelasBrowser() {
           </p>
         </Card>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {load.videos.map((video) => (
-            <li key={video.videoId}>
+        <ul key={subject} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {load.videos.map((video, index) => (
+            <li
+              key={video.videoId}
+              className="animate-enter-up"
+              style={{ animationDelay: `${index * 55}ms` }}
+            >
               <Link
                 href={`/dashboard/kelas/${video.videoId}`}
                 className="group block rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
               >
-                <Card className="flex h-full flex-col overflow-hidden p-0 transition-colors group-hover:border-border-strong group-hover:bg-elevated">
+                <Card className="flex h-full flex-col overflow-hidden p-0 transition-all group-hover:-translate-y-1 group-hover:border-border-strong group-hover:bg-elevated">
                   <div className="aspect-video w-full overflow-hidden bg-elevated">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img

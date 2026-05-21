@@ -1,5 +1,6 @@
 import { getSession } from "@/lib/auth";
 import { KelasBrowser } from "@/components/kelas-browser";
+import { Reveal } from "@/components/reveal";
 
 export default async function KelasPage() {
   const session = await getSession();
@@ -7,7 +8,7 @@ export default async function KelasPage() {
 
   return (
     <div className="flex flex-col gap-10">
-      <section className="flex flex-col gap-5">
+      <Reveal as="section" className="flex flex-col gap-5">
         <div className="flex flex-col gap-1">
           <p className="text-xs uppercase tracking-wider text-muted-foreground">
             Pelajaran video
@@ -20,9 +21,11 @@ export default async function KelasPage() {
             tambahan dari AI.
           </p>
         </div>
-      </section>
+      </Reveal>
 
-      <KelasBrowser />
+      <Reveal>
+        <KelasBrowser />
+      </Reveal>
     </div>
   );
 }

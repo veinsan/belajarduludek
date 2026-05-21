@@ -60,8 +60,8 @@ function LoginForm() {
 
   return (
     <div className="flex flex-1 items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
+      <Card className="animate-enter-up w-full max-w-sm border-border-strong shadow-[0_24px_70px_rgba(0,0,0,0.25)]">
+        <CardHeader className="animate-enter-up animation-delay-100">
           <CardTitle>Masuk ke BelajarDuluDek</CardTitle>
           <CardDescription>
             Gunakan email dan kata sandi yang sudah kamu daftarkan.
@@ -69,7 +69,7 @@ function LoginForm() {
         </CardHeader>
         <CardContent>
           <form id="login-form" onSubmit={onSubmit} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
+            <div className="animate-enter-up animation-delay-200 flex flex-col gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -82,7 +82,7 @@ function LoginForm() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="animate-enter-up animation-delay-300 flex flex-col gap-2">
               <Label htmlFor="password">Kata sandi</Label>
               <Input
                 id="password"
@@ -102,7 +102,7 @@ function LoginForm() {
             ) : null}
           </form>
         </CardContent>
-        <CardFooter className="flex flex-col gap-3">
+        <CardFooter className="animate-enter-up animation-delay-400 flex flex-col gap-3">
           <Button
             type="submit"
             form="login-form"

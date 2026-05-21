@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { DashboardTabs } from "@/components/dashboard-tabs";
+import { Reveal } from "@/components/reveal";
 
 const SHORTCUTS = [
   {
@@ -81,7 +82,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-12">
-      <section className="flex flex-col items-center gap-2 text-center">
+      <Reveal as="section" className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-3xl font-black tracking-tight md:text-4xl">
           Mau Belajar apa Hari ini?
         </h1>
@@ -95,17 +96,19 @@ export default async function DashboardPage() {
           <span className="font-medium text-foreground">📊 {totalQuizzes}</span>{" "}
           kuis selesai
         </p>
-      </section>
+      </Reveal>
 
-      <section
+      <Reveal
+        as="section"
         className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-5"
         aria-label="Pintasan"
       >
-        {SHORTCUTS.map((s) => (
+        {SHORTCUTS.map((s, index) => (
           <Link
             key={s.href}
             href={s.href}
-            className="group flex min-h-[130px] items-center justify-between gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-border-strong hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+            className="animate-enter-up group flex min-h-[130px] items-center justify-between gap-4 rounded-xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-border-strong hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+            style={{ animationDelay: `${index * 70}ms` }}
           >
             <div className="flex flex-col">
               <span className="text-lg font-bold leading-tight">{s.label}</span>
@@ -121,27 +124,29 @@ export default async function DashboardPage() {
             </span>
           </Link>
         ))}
-      </section>
+      </Reveal>
 
-      <DashboardTabs
-        decks={decks.map((d) => ({
-          id: d.id,
-          title: d.title,
-          description: d.description,
-          cardCount: d._count.cards,
-        }))}
-        materials={materials.map((m) => ({
-          id: m.id,
-          title: m.title,
-          createdAt: m.createdAt,
-          hasSummary: Boolean(m.summary),
-        }))}
-        paths={paths.map((p) => ({
-          id: p.id,
-          title: p.title,
-          stepCount: p._count.steps,
-        }))}
-      />
+      <Reveal>
+        <DashboardTabs
+          decks={decks.map((d) => ({
+            id: d.id,
+            title: d.title,
+            description: d.description,
+            cardCount: d._count.cards,
+          }))}
+          materials={materials.map((m) => ({
+            id: m.id,
+            title: m.title,
+            createdAt: m.createdAt,
+            hasSummary: Boolean(m.summary),
+          }))}
+          paths={paths.map((p) => ({
+            id: p.id,
+            title: p.title,
+            stepCount: p._count.steps,
+          }))}
+        />
+      </Reveal>
     </div>
   );
 }

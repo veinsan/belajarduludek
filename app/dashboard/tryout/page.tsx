@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { TryoutRunner } from "@/components/tryout-runner";
+import { Reveal } from "@/components/reveal";
 
 export default async function TryoutPage() {
   const session = await getSession();
@@ -36,7 +37,7 @@ export default async function TryoutPage() {
 
   return (
     <div className="flex flex-col gap-10">
-      <section className="flex flex-col gap-5">
+      <Reveal as="section" className="flex flex-col gap-5">
         <div className="flex flex-col gap-1">
           <p className="text-xs uppercase tracking-wider text-muted-foreground">
             Latihan gabungan
@@ -51,7 +52,7 @@ export default async function TryoutPage() {
         </div>
         {eligibleDecks.length > 0 ? (
           <div className="grid grid-cols-2 gap-3 sm:max-w-md">
-            <div className="rounded-xl border bg-card p-4">
+            <div className="animate-enter-up rounded-xl border bg-card p-4 transition-transform hover:-translate-y-0.5">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
                 Deck siap
               </p>
@@ -59,7 +60,7 @@ export default async function TryoutPage() {
                 {eligibleDecks.length}
               </p>
             </div>
-            <div className="rounded-xl border bg-card p-4">
+            <div className="animate-enter-up animation-delay-100 rounded-xl border bg-card p-4 transition-transform hover:-translate-y-0.5">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
                 Total kartu
               </p>
@@ -69,12 +70,15 @@ export default async function TryoutPage() {
             </div>
           </div>
         ) : null}
-      </section>
+      </Reveal>
 
       {eligibleDecks.length > 0 ? (
-        <TryoutRunner decks={decks} />
+        <Reveal delay={120}>
+          <TryoutRunner decks={decks} />
+        </Reveal>
       ) : (
-        <Card>
+        <Reveal>
+          <Card>
           <CardHeader>
             <CardTitle>Belum ada deck untuk tryout</CardTitle>
             <CardDescription>
@@ -87,7 +91,8 @@ export default async function TryoutPage() {
               <Link href="/dashboard/decks/new">Buat deck pertama</Link>
             </Button>
           </div>
-        </Card>
+          </Card>
+        </Reveal>
       )}
     </div>
   );

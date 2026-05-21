@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CardRow } from "@/components/card-row";
+import { Reveal } from "@/components/reveal";
 
 const dateFormatter = new Intl.DateTimeFormat("id-ID", {
   day: "numeric",
@@ -53,7 +54,7 @@ export default async function RangkumPage() {
 
   return (
     <div className="flex flex-col gap-10">
-      <section className="flex flex-col gap-5">
+      <Reveal as="section" className="flex flex-col gap-5">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="flex flex-col gap-1">
             <p className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -79,92 +80,112 @@ export default async function RangkumPage() {
           </div>
         </div>
         <div className="grid grid-cols-3 gap-3 sm:max-w-xl">
-          <StatPill label="Materi" value={materials.length} />
-          <StatPill label="Deck" value={decks.length} />
-          <StatPill label="Jalur" value={paths.length} />
+          <StatPill label="Materi" value={materials.length} delay={0} />
+          <StatPill label="Deck" value={decks.length} delay={80} />
+          <StatPill label="Jalur" value={paths.length} delay={160} />
         </div>
-      </section>
+      </Reveal>
 
-      <CardRow
-        title="Materi"
-        viewAllHref="/dashboard/materials"
-        viewAllLabel="Lihat semua materi"
-      >
-        {materials.length === 0 ? (
-          <EmptySlot
-            title="Belum ada materi"
-            description="Simpan catatan atau ringkasan pelajaran."
-            ctaHref="/dashboard/materials/new"
-            ctaLabel="Tambah materi"
-          />
-        ) : (
-          materials.map((material) => (
-            <MaterialCard
-              key={material.id}
-              id={material.id}
-              title={material.title}
-              createdAt={material.createdAt}
-              hasSummary={Boolean(material.summary)}
+      <Reveal delay={100}>
+        <CardRow
+          title="Materi"
+          viewAllHref="/dashboard/materials"
+          viewAllLabel="Lihat semua materi"
+        >
+          {materials.length === 0 ? (
+            <EmptySlot
+              title="Belum ada materi"
+              description="Simpan catatan atau ringkasan pelajaran."
+              ctaHref="/dashboard/materials/new"
+              ctaLabel="Tambah materi"
             />
-          ))
-        )}
-      </CardRow>
+          ) : (
+            materials.map((material, index) => (
+              <MaterialCard
+                key={material.id}
+                id={material.id}
+                title={material.title}
+                createdAt={material.createdAt}
+                hasSummary={Boolean(material.summary)}
+                delay={index * 55}
+              />
+            ))
+          )}
+        </CardRow>
+      </Reveal>
 
-      <CardRow
-        title="Deck & Flashcard"
-        viewAllHref="/dashboard"
-        viewAllLabel="Lihat di beranda"
-      >
-        {decks.length === 0 ? (
-          <EmptySlot
-            title="Belum ada deck"
-            description="Bikin flashcard untuk drill materi."
-            ctaHref="/dashboard/decks/new"
-            ctaLabel="Buat deck"
-          />
-        ) : (
-          decks.map((deck) => (
-            <DeckCard
-              key={deck.id}
-              id={deck.id}
-              title={deck.title}
-              description={deck.description}
-              cardCount={deck._count.cards}
+      <Reveal delay={180}>
+        <CardRow
+          title="Deck & Flashcard"
+          viewAllHref="/dashboard"
+          viewAllLabel="Lihat di beranda"
+        >
+          {decks.length === 0 ? (
+            <EmptySlot
+              title="Belum ada deck"
+              description="Bikin flashcard untuk drill materi."
+              ctaHref="/dashboard/decks/new"
+              ctaLabel="Buat deck"
             />
-          ))
-        )}
-      </CardRow>
+          ) : (
+            decks.map((deck, index) => (
+              <DeckCard
+                key={deck.id}
+                id={deck.id}
+                title={deck.title}
+                description={deck.description}
+                cardCount={deck._count.cards}
+                delay={index * 55}
+              />
+            ))
+          )}
+        </CardRow>
+      </Reveal>
 
-      <CardRow
-        title="Jalur Belajar"
-        viewAllHref="/dashboard/paths"
-        viewAllLabel="Lihat semua jalur"
-      >
-        {paths.length === 0 ? (
-          <EmptySlot
-            title="Belum ada jalur"
-            description="Urutkan deck jadi jalur belajar bertahap."
-            ctaHref="/dashboard/paths/new"
-            ctaLabel="Buat jalur"
-          />
-        ) : (
-          paths.map((path) => (
-            <PathCard
-              key={path.id}
-              id={path.id}
-              title={path.title}
-              stepCount={path._count.steps}
+      <Reveal delay={260}>
+        <CardRow
+          title="Jalur Belajar"
+          viewAllHref="/dashboard/paths"
+          viewAllLabel="Lihat semua jalur"
+        >
+          {paths.length === 0 ? (
+            <EmptySlot
+              title="Belum ada jalur"
+              description="Urutkan deck jadi jalur belajar bertahap."
+              ctaHref="/dashboard/paths/new"
+              ctaLabel="Buat jalur"
             />
-          ))
-        )}
-      </CardRow>
+          ) : (
+            paths.map((path, index) => (
+              <PathCard
+                key={path.id}
+                id={path.id}
+                title={path.title}
+                stepCount={path._count.steps}
+                delay={index * 55}
+              />
+            ))
+          )}
+        </CardRow>
+      </Reveal>
     </div>
   );
 }
 
-function StatPill({ label, value }: { label: string; value: number }) {
+function StatPill({
+  label,
+  value,
+  delay = 0,
+}: {
+  label: string;
+  value: number;
+  delay?: number;
+}) {
   return (
-    <div className="rounded-xl border bg-card p-4">
+    <div
+      className="animate-enter-up rounded-xl border bg-card p-4 transition-transform hover:-translate-y-0.5"
+      style={{ animationDelay: `${delay}ms` }}
+    >
       <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
         {label}
       </p>
@@ -180,18 +201,21 @@ function MaterialCard({
   title,
   createdAt,
   hasSummary,
+  delay = 0,
 }: {
   id: string;
   title: string;
   createdAt: Date;
   hasSummary: boolean;
+  delay?: number;
 }) {
   return (
     <Link
       href={`/dashboard/materials/${id}`}
-      className="group block w-[260px] shrink-0 snap-start rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+      className="animate-enter-up group block w-[260px] shrink-0 snap-start rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+      style={{ animationDelay: `${delay}ms` }}
     >
-      <Card className="flex h-[160px] flex-col justify-between p-5 transition-colors group-hover:border-border-strong group-hover:bg-elevated">
+      <Card className="flex h-[160px] flex-col justify-between p-5 transition-all group-hover:-translate-y-1 group-hover:border-border-strong group-hover:bg-elevated">
         <div className="flex flex-col gap-2">
           {hasSummary ? (
             <span className="w-fit rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-light">
@@ -219,18 +243,21 @@ function DeckCard({
   title,
   description,
   cardCount,
+  delay = 0,
 }: {
   id: string;
   title: string;
   description: string | null;
   cardCount: number;
+  delay?: number;
 }) {
   return (
     <Link
       href={`/dashboard/decks/${id}`}
-      className="group block w-[260px] shrink-0 snap-start rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+      className="animate-enter-up group block w-[260px] shrink-0 snap-start rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+      style={{ animationDelay: `${delay}ms` }}
     >
-      <Card className="flex h-[160px] flex-col justify-between p-5 transition-colors group-hover:border-border-strong group-hover:bg-elevated">
+      <Card className="flex h-[160px] flex-col justify-between p-5 transition-all group-hover:-translate-y-1 group-hover:border-border-strong group-hover:bg-elevated">
         <div className="flex flex-col gap-2">
           <span className="w-fit rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-light">
             Deck
@@ -256,17 +283,20 @@ function PathCard({
   id,
   title,
   stepCount,
+  delay = 0,
 }: {
   id: string;
   title: string;
   stepCount: number;
+  delay?: number;
 }) {
   return (
     <Link
       href={`/dashboard/paths/${id}`}
-      className="group block w-[260px] shrink-0 snap-start rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+      className="animate-enter-up group block w-[260px] shrink-0 snap-start rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+      style={{ animationDelay: `${delay}ms` }}
     >
-      <Card className="flex h-[160px] flex-col justify-between p-5 transition-colors group-hover:border-border-strong group-hover:bg-elevated">
+      <Card className="flex h-[160px] flex-col justify-between p-5 transition-all group-hover:-translate-y-1 group-hover:border-border-strong group-hover:bg-elevated">
         <div className="flex flex-col gap-2">
           <span className="w-fit rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-light">
             Jalur

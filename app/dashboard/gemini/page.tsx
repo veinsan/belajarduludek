@@ -1,5 +1,6 @@
 import { getSession } from "@/lib/auth";
 import { GeminiChat } from "@/components/gemini-chat";
+import { Reveal } from "@/components/reveal";
 
 export default async function GeminiPage() {
   const session = await getSession();
@@ -7,7 +8,7 @@ export default async function GeminiPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="flex flex-col gap-3">
+      <Reveal as="section" className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-light">
             AI · Gemini
@@ -25,9 +26,11 @@ export default async function GeminiPage() {
             konsep, meringkas topik, atau membantu mengerjakan PR.
           </p>
         </div>
-      </section>
+      </Reveal>
 
-      <GeminiChat />
+      <Reveal delay={120}>
+        <GeminiChat />
+      </Reveal>
     </div>
   );
 }
