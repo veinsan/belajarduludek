@@ -12,22 +12,28 @@ const SHORTCUTS = [
     description: "Video materi MIPA",
   },
   {
-    href: "/dashboard/gemini",
-    icon: "🤖",
-    label: "Gemini AI",
-    description: "Tanya AI kapan saja",
-  },
-  {
     href: "/dashboard/tryout",
     icon: "📝",
     label: "Try Out",
     description: "Uji kemampuanmu",
   },
   {
+    href: "/dashboard/gemini",
+    icon: "🤖",
+    label: "Copilot AI",
+    description: "Chatbot teman belajarmu",
+  },
+  {
+    href: "/dashboard/materials",
+    icon: "📕",
+    label: "Perpustakaan",
+    description: "Text book, rangkuman, bank soal",
+  },
+  {
     href: "/dashboard/rangkum",
-    icon: "✨",
-    label: "Rangkum Materi",
-    description: "Ringkas, flashcard, kuis",
+    icon: "▦",
+    label: "Lainnya",
+    description: "Fitur belajar lain",
   },
 ];
 
@@ -74,13 +80,13 @@ export default async function DashboardPage() {
   const totalQuizzes = stats?.totalQuizzes ?? 0;
 
   return (
-    <div className="flex flex-col gap-10">
-      <section className="flex flex-col items-center gap-3 pt-4 text-center">
-        <h1 className="text-4xl font-black tracking-tight md:text-5xl">
-          Halo, {firstName}.
+    <div className="flex flex-col gap-12">
+      <section className="flex flex-col items-center gap-2 text-center">
+        <h1 className="text-3xl font-black tracking-tight md:text-4xl">
+          Mau Belajar apa Hari ini?
         </h1>
         <p className="max-w-xl text-sm text-muted-foreground md:text-base">
-          Mau belajar apa hari ini?
+          Halo, {firstName}. Pilih aktivitas belajar yang mau kamu lanjutkan.
         </p>
         <p className="text-xs text-muted-foreground">
           <span className="font-medium text-foreground">🔥 {currentStreak}</span>{" "}
@@ -92,27 +98,27 @@ export default async function DashboardPage() {
       </section>
 
       <section
-        className="grid grid-cols-2 gap-3 md:grid-cols-4"
+        className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-5"
         aria-label="Pintasan"
       >
         {SHORTCUTS.map((s) => (
           <Link
             key={s.href}
             href={s.href}
-            className="group flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-border-strong hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+            className="group flex min-h-[130px] items-center justify-between gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-border-strong hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
           >
-            <span
-              aria-hidden
-              className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-lg"
-            >
-              {s.icon}
-            </span>
             <div className="flex flex-col">
-              <span className="font-bold leading-tight">{s.label}</span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-lg font-bold leading-tight">{s.label}</span>
+              <span className="text-sm leading-snug text-muted-foreground">
                 {s.description}
               </span>
             </div>
+            <span
+              aria-hidden
+              className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-2xl"
+            >
+              {s.icon}
+            </span>
           </Link>
         ))}
       </section>

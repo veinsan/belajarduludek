@@ -66,6 +66,8 @@ export default function RegisterPage() {
                 id="name"
                 type="text"
                 autoComplete="name"
+                placeholder="Nama Kamu"
+                className="border-border-strong bg-elevated/40"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -77,6 +79,8 @@ export default function RegisterPage() {
                 id="email"
                 type="email"
                 autoComplete="email"
+                placeholder="contoh@email.com"
+                className="border-border-strong bg-elevated/40"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -88,6 +92,8 @@ export default function RegisterPage() {
                 id="password"
                 type="password"
                 autoComplete="new-password"
+                placeholder="rahasia123"
+                className="border-border-strong bg-elevated/40"
                 required
                 minLength={8}
                 value={password}

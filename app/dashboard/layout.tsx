@@ -16,7 +16,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-full flex-1 flex-col md:flex-row">
-      <aside className="flex shrink-0 flex-col gap-6 border-b bg-sidebar px-5 py-5 md:sticky md:top-0 md:h-screen md:w-60 md:border-r md:border-b-0 md:py-7">
+      <aside className="flex shrink-0 flex-col gap-7 border-b bg-sidebar px-6 py-6 md:sticky md:top-0 md:h-screen md:w-[300px] md:border-r md:border-b-0 md:px-7 md:py-7">
         <Link
           href="/dashboard"
           className="text-base font-extrabold tracking-tight"
@@ -36,8 +36,8 @@ export default async function DashboardLayout({
           <LogoutButton />
         </div>
       </aside>
-      <main className="flex-1 px-4 py-8 md:px-10 md:py-10">
-        <div className="mx-auto w-full max-w-6xl">{children}</div>
+      <main className="flex-1 px-5 py-8 md:px-12 md:py-10 xl:px-14">
+        <div className="mx-auto w-full max-w-[1628px]">{children}</div>
       </main>
       <AiChat />
     </div>
