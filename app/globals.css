@@ -303,11 +303,14 @@
   .liquid-glass::before {
     content: "";
     position: absolute;
-    inset: 0 auto 0 0;
-    width: 42%;
+    inset: 0;
+    left: 0;
+    right: 0;
     pointer-events: none;
-    background: rgb(255 255 255 / 0.045);
-    opacity: 0.72;
+    z-index: 0;
+    /* diagonal gradient (top-right → bottom-left) with a subtle purple tint */
+    background: linear-gradient(to bottom left, rgba(255,255,255,0.06) 0%, rgba(111,66,193,0.08) 18%, rgba(255,255,255,0.03) 45%, rgba(255,255,255,0) 100%);
+    opacity: 0.95;
     mix-blend-mode: screen;
   }
 
