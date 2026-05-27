@@ -20,28 +20,28 @@ const features = [
     title: "Upload materi",
     icon: Upload,
     description:
-      "Simpan catatan, ringkasan kelas, atau bab buku di satu tempat. Akses kapan saja, dari mana saja.",
+      "Masukin catatan, PDF, foto papan tulis, atau materi sekolah. Semua rapi di satu tempat.",
   },
   {
     number: "02",
     title: "Ringkasan AI",
     icon: BrainCircuit,
     description:
-      "Tempel materi panjang, biarkan AI menyaring intinya jadi poin-poin yang siap kamu pelajari.",
+      "Materi panjang? Biar AI bantu ringkas jadi poin penting yang lebih gampang dipahami.",
   },
   {
     number: "03",
     title: "Flashcard otomatis",
     icon: NotebookTabs,
     description:
-      "AI bantu membuat kartu Q&A dari materimu. Bolak-balik kartu, hafal lebih cepat.",
+      "Ubah materi jadi kartu belajar otomatis biar hafal lebih cepat dan nggak gampang lupa.",
   },
   {
     number: "04",
     title: "Kuis & tryout",
     icon: ClipboardCheck,
     description:
-      "Uji pemahamanmu lewat kuis pilihan ganda dan tryout gabungan. Streak harianmu kelihatan.",
+      "Tes pemahaman lewat latihan soal dan tryout biar makin siap pas ulangan atau UTBK.",
   },
 ];
 
@@ -82,14 +82,13 @@ export default async function Home() {
               Untuk siswa SMA Indonesia
             </span>
             <h1 className="animate-enter-up animation-delay-100 text-6xl font-black leading-[0.98] tracking-tight md:text-7xl lg:text-[84px]">
-              Belajar <span className="text-primary">dulu, dek.</span>
+              Belajar <span className="text-primary"> Dulu </span> Dek
               <br />
-              Biar nilainya mengikuti.
+              Biar jadi smart kid
             </h1>
             <p className="animate-enter-up animation-delay-200 max-w-[760px] text-xl leading-relaxed text-muted-foreground md:text-2xl">
-              BelajarDuluDek mengubah catatan dan materi pelajaranmu jadi
-              ringkasan, flashcard, dan kuis interaktif. Satu tempat untuk semua
-              persiapan ulangan dan UTBK.
+              Upload materi, terus ubah jadi ringkasan, flashcard, dan kuis interaktif.
+              Belajar buat ulangan dan UTBK jadi lebih gampang
             </p>
             <div className="animate-enter-up animation-delay-300 flex flex-wrap items-center gap-4 pt-4">
               <Button
@@ -122,7 +121,7 @@ export default async function Home() {
               Yang kamu dapat
             </p>
             <h2 className="text-4xl font-extrabold tracking-tight md:text-[42px]">
-              Empat alat, satu tempat.
+              Belajar lebih gampang, bukan lebih banyak
             </h2>
           </div>
           <ul className="grid gap-5 md:grid-cols-2">
@@ -158,10 +157,10 @@ export default async function Home() {
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary-light/50 to-transparent" />
             <div className="flex flex-col gap-2">
               <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">
-                Siap belajar lebih cerdas?
+                Udah siap mulai belajar?
               </h2>
               <p className="text-lg text-muted-foreground">
-                Gratis untuk dipakai. Daftar pakai email, langsung mulai.
+                Gratis dipakai. Tinggal daftar, upload materi, langsung mulai.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-5">
@@ -185,7 +184,7 @@ export default async function Home() {
         <div className="mx-auto flex w-full max-w-[1302px] flex-col items-start gap-2 px-5 py-8">
           <p className="text-base font-bold">BelajarDuluDek</p>
           <p className="text-sm text-muted-foreground">
-            Belajar dulu, dek. Biar nilainya mengikuti.
+            Ringkasan, flashcard, dan latihan soal dalam satu tempat
           </p>
         </div>
       </footer>
