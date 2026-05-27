@@ -29,16 +29,18 @@ export default async function TryoutPage() {
         },
       },
     }),
-    prisma.adminTryout.findMany({
-      orderBy: { updatedAt: "desc" },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        durationMinutes: true,
-        questions: true,
-      },
-    }),
+    prisma.adminTryout
+      .findMany({
+        orderBy: { updatedAt: "desc" },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          durationMinutes: true,
+          questions: true,
+        },
+      })
+      .catch(() => []),
   ]);
 
   const eligibleDecks = decks.filter((d) => d.cards.length > 0);

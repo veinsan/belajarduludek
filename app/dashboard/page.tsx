@@ -32,7 +32,7 @@ const SHORTCUTS = [
   {
     href: "/dashboard/gemini",
     icon: Bot,
-    label: "Copilot AI",
+    label: "Gemini AI",
     description: "Chatbot teman belajarmu",
   },
   {

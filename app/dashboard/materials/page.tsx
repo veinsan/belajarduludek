@@ -27,18 +27,20 @@ export default async function MaterialsPage() {
         summary: true,
       },
     }),
-    prisma.adminBook.findMany({
-      orderBy: { updatedAt: "desc" },
-      select: {
-        id: true,
-        title: true,
-        author: true,
-        description: true,
-        coverUrl: true,
-        pdfUrl: true,
-        updatedAt: true,
-      },
-    }),
+    prisma.adminBook
+      .findMany({
+        orderBy: { updatedAt: "desc" },
+        select: {
+          id: true,
+          title: true,
+          author: true,
+          description: true,
+          coverUrl: true,
+          pdfUrl: true,
+          updatedAt: true,
+        },
+      })
+      .catch(() => []),
   ]);
 
   const summarizedCount = materials.filter((m) => m.summary).length;

@@ -7,17 +7,19 @@ export default async function KelasPage() {
   const session = await getSession();
   if (!session) return null;
 
-  const adminClasses = await prisma.adminClass.findMany({
-    orderBy: { updatedAt: "desc" },
-    select: {
-      id: true,
-      title: true,
-      subject: true,
-      description: true,
-      videoId: true,
-      thumbnailUrl: true,
-    },
-  });
+  const adminClasses = await prisma.adminClass
+    .findMany({
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        subject: true,
+        description: true,
+        videoId: true,
+        thumbnailUrl: true,
+      },
+    })
+    .catch(() => []);
 
   return (
     <div className="flex flex-col gap-10">

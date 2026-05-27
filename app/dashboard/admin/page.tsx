@@ -22,9 +22,15 @@ export default async function AdminPage() {
         createdAt: true,
       },
     }),
-    prisma.adminClass.findMany({ orderBy: { updatedAt: "desc" } }),
-    prisma.adminTryout.findMany({ orderBy: { updatedAt: "desc" } }),
-    prisma.adminBook.findMany({ orderBy: { updatedAt: "desc" } }),
+    prisma.adminClass
+      .findMany({ orderBy: { updatedAt: "desc" } })
+      .catch(() => []),
+    prisma.adminTryout
+      .findMany({ orderBy: { updatedAt: "desc" } })
+      .catch(() => []),
+    prisma.adminBook
+      .findMany({ orderBy: { updatedAt: "desc" } })
+      .catch(() => []),
   ]);
 
   const pending = users.filter((u) => u.status === "PENDING");
