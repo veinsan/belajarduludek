@@ -4,8 +4,10 @@ import * as React from "react";
 import Link from "next/link";
 import {
   BookOpen,
+  ChevronRight,
   CirclePlay,
   FileText,
+  Film,
   NotebookTabs,
   Route,
 } from "lucide-react";
@@ -80,21 +82,23 @@ export function DashboardTabs({
   const [active, setActive] = React.useState<TabKey>("deck");
 
   return (
-    <section className="flex flex-col gap-16">
-      <VideoSection />
+    <section className="flex min-w-0 flex-col gap-8">
+      <div className="liquid-glass neon-edge rounded-[1.25rem] p-0">
+        <VideoSection />
+      </div>
 
-      <div className="flex flex-col gap-5">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div className="flex flex-col gap-1">
-            <p className="text-xs font-semibold uppercase tracking-wider text-primary-light">
-              Koleksi belajarmu
-            </p>
+      <div className="liquid-glass neon-edge flex min-w-0 flex-col gap-5 rounded-[1.25rem] p-0">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/8 px-5 py-4 md:px-6">
+          <div className="flex items-center gap-3">
+            <span className="flex size-8 items-center justify-center rounded-lg border border-primary-light/25 bg-primary/18 text-primary-light">
+              <NotebookTabs className="size-4" />
+            </span>
             <h2 className="text-lg font-extrabold tracking-tight md:text-xl">
               Deck, materi, dan jalur terakhir
             </h2>
           </div>
           <div
-            className="flex gap-1 border-b border-border"
+            className="rounded-2xl border border-white/10 bg-white/[0.045] p-1"
             role="tablist"
             aria-label="Pilih jenis konten"
           >
@@ -108,10 +112,10 @@ export function DashboardTabs({
                   aria-selected={isActive}
                   onClick={() => setActive(tab.key)}
                   className={cn(
-                    "-mb-px border-b-2 px-4 py-2 text-sm font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+                    "rounded-xl px-4 py-2 text-sm font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
                     isActive
-                      ? "border-primary text-foreground"
-                      : "border-transparent text-muted-foreground hover:text-foreground"
+                      ? "bg-white/[0.1] text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
+                      : "text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
                   )}
                 >
                   {tab.label}
@@ -121,7 +125,7 @@ export function DashboardTabs({
           </div>
         </div>
 
-        <div className="scrollbar-hide -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-1 md:-mx-3 md:px-3">
+        <div className="scrollbar-hide flex max-w-full snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-6 md:px-6">
           {active === "deck" ? (
             decks.length === 0 ? (
               <EmptySlot
@@ -208,18 +212,27 @@ function VideoSection() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <p className="text-xs font-semibold uppercase tracking-wider text-primary-light">
-          Belajar dari video
-        </p>
-        <h2 className="text-2xl font-extrabold tracking-tight md:text-3xl">
-          Video Pelajaran
-        </h2>
+    <div className="flex min-w-0 flex-col">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/8 px-5 py-4 md:px-6">
+        <div className="flex items-center gap-3">
+          <span className="flex size-8 items-center justify-center rounded-lg border border-primary-light/25 bg-primary/18 text-primary-light">
+            <Film className="size-4" />
+          </span>
+          <h2 className="text-2xl font-extrabold tracking-tight">
+            Video Pelajaran
+          </h2>
+        </div>
+        <Link
+          href="/dashboard/kelas"
+          className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.055] px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:bg-white/[0.09] hover:text-foreground"
+        >
+          Lihat semua
+          <ChevronRight className="size-4" />
+        </Link>
       </div>
 
       <div
-        className="grid grid-cols-4 border-b border-border"
+        className="mx-5 mt-4 grid grid-cols-2 gap-1 rounded-2xl border border-white/10 bg-white/[0.045] p-1 md:mx-6 md:max-w-[720px] md:grid-cols-4"
         role="tablist"
         aria-label="Pilih mata pelajaran"
       >
@@ -234,10 +247,10 @@ function VideoSection() {
               aria-controls={panelId}
               onClick={() => selectSubject(s.key)}
               className={cn(
-                "-mb-px flex justify-center border-b-2 px-4 py-2 text-center text-sm font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+                "flex justify-center rounded-xl px-4 py-2 text-center text-sm font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
                 isActive
-                  ? "border-primary text-foreground"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
+                  ? "bg-white/[0.1] text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
+                  : "text-muted-foreground hover:bg-white/[0.05] hover:text-foreground"
               )}
             >
               {s.label}
@@ -246,27 +259,32 @@ function VideoSection() {
         })}
       </div>
 
-      <div id={panelId} role="tabpanel" aria-label={`Video ${subject}`}>
+      <div
+        id={panelId}
+        role="tabpanel"
+        aria-label={`Video ${subject}`}
+        className="px-5 pb-6 pt-4 md:px-6"
+      >
         {load.status === "loading" ? (
-          <div className="scrollbar-hide -mx-5 flex gap-5 overflow-x-auto px-5 pb-1 md:-mx-3 md:px-3">
+          <div className="scrollbar-hide flex max-w-full gap-5 overflow-x-auto">
             {Array.from({ length: 4 }).map((_, i) => (
               <VideoSkeleton key={i} />
             ))}
           </div>
         ) : load.status === "error" ? (
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div className="liquid-card rounded-2xl p-5">
             <p className="text-sm font-semibold">Gagal memuat video</p>
             <p className="mt-1 text-sm text-muted-foreground">{load.message}</p>
           </div>
         ) : load.videos.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border-strong bg-card/40 p-5">
+          <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.045] p-5">
             <p className="text-sm font-semibold">Belum ada video</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Coba pilih mata pelajaran lain.
             </p>
           </div>
         ) : (
-          <div className="scrollbar-hide -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-1 md:-mx-3 md:px-3">
+          <div className="scrollbar-hide flex max-w-full snap-x snap-mandatory gap-5 overflow-x-auto">
             {load.videos.map((video) => (
               <VideoCard key={video.videoId} video={video} />
             ))}
@@ -283,7 +301,7 @@ function VideoCard({ video }: { video: KelasVideo }) {
       href={`/dashboard/kelas/${video.videoId}`}
       className="group block w-[300px] shrink-0 snap-start rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
     >
-      <Card className="flex h-full flex-col gap-0 overflow-hidden p-0 transition-colors group-hover:border-border-strong group-hover:bg-elevated">
+      <Card className="liquid-card flex h-full flex-col gap-0 overflow-hidden rounded-[1.1rem] p-0 transition-colors group-hover:border-white/20">
         <div className="relative aspect-video w-full overflow-hidden bg-elevated">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -299,6 +317,9 @@ function VideoCard({ video }: { video: KelasVideo }) {
             <span className="flex size-11 items-center justify-center rounded-full border border-white/60 bg-black/50 text-white shadow-lg">
               <CirclePlay className="size-6" />
             </span>
+          </span>
+          <span className="absolute right-3 bottom-3 rounded-md bg-black/55 px-2 py-1 text-xs font-semibold text-white">
+            10:27
           </span>
         </div>
         <div className="flex flex-col gap-1.5 p-4">
@@ -317,7 +338,7 @@ function VideoCard({ video }: { video: KelasVideo }) {
 function VideoSkeleton() {
   return (
     <div className="w-[300px] shrink-0">
-      <Card className="flex flex-col gap-0 overflow-hidden p-0">
+      <Card className="liquid-card flex flex-col gap-0 overflow-hidden rounded-[1.35rem] p-0">
         <div className="aspect-video w-full animate-pulse bg-elevated" />
         <div className="flex flex-col gap-2 p-4">
           <div className="h-4 w-3/4 animate-pulse rounded bg-elevated" />
@@ -334,7 +355,7 @@ function DeckCard({ deck }: { deck: DeckItem }) {
       href={`/dashboard/decks/${deck.id}`}
       className="group block w-[260px] shrink-0 snap-start rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
     >
-      <Card className="flex h-[160px] flex-col justify-between p-5 transition-colors group-hover:border-border-strong group-hover:bg-elevated">
+      <Card className="liquid-card flex h-[160px] flex-col justify-between rounded-[1.35rem] p-5 transition-colors group-hover:border-white/20">
         <div className="flex flex-col gap-2">
           <span className="flex w-fit items-center gap-1 rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-light">
             <NotebookTabs className="size-3" aria-hidden />
@@ -363,7 +384,7 @@ function MaterialCard({ material }: { material: MaterialItem }) {
       href={`/dashboard/materials/${material.id}`}
       className="group block w-[260px] shrink-0 snap-start rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
     >
-      <Card className="flex h-[160px] flex-col justify-between p-5 transition-colors group-hover:border-border-strong group-hover:bg-elevated">
+      <Card className="liquid-card flex h-[160px] flex-col justify-between rounded-[1.35rem] p-5 transition-colors group-hover:border-white/20">
         <div className="flex flex-col gap-2">
           {material.hasSummary ? (
             <span className="flex w-fit items-center gap-1 rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-light">
@@ -394,7 +415,7 @@ function PathCard({ path }: { path: PathItem }) {
       href={`/dashboard/paths/${path.id}`}
       className="group block w-[260px] shrink-0 snap-start rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
     >
-      <Card className="flex h-[160px] flex-col justify-between p-5 transition-colors group-hover:border-border-strong group-hover:bg-elevated">
+      <Card className="liquid-card flex h-[160px] flex-col justify-between rounded-[1.35rem] p-5 transition-colors group-hover:border-white/20">
         <div className="flex flex-col gap-2">
           <span className="flex w-fit items-center gap-1 rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-light">
             <Route className="size-3" aria-hidden />
@@ -424,7 +445,7 @@ function EmptySlot({
   ctaLabel: string;
 }) {
   return (
-    <div className="flex w-[280px] shrink-0 snap-start flex-col justify-between rounded-xl border border-dashed border-border-strong bg-card/40 p-5">
+    <div className="flex w-[280px] shrink-0 snap-start flex-col justify-between rounded-[1.35rem] border border-dashed border-white/15 bg-white/[0.045] p-5">
       <div>
         <p className="text-sm font-semibold">{title}</p>
         <p className="mt-1 text-xs text-muted-foreground">{description}</p>

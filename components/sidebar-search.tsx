@@ -18,7 +18,7 @@ export function SidebarSearch() {
   return (
     <form
       onSubmit={onSubmit}
-      className="flex items-center gap-2 rounded-xl border border-border-strong bg-card/60 px-3.5 py-3 transition-colors focus-within:border-primary/50"
+      className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.045] px-3.5 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-colors focus-within:border-primary/60 focus-within:bg-white/[0.07]"
     >
       <Search className="size-4 shrink-0 text-muted-foreground" />
       <input

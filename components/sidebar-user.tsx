@@ -56,9 +56,9 @@ export function SidebarUser({ name }: { name: string }) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center gap-3 rounded-sm border border-border-strong bg-card/60 px-3 py-3 text-left transition-colors hover:bg-background"
+        className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.045] px-3 py-3 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-colors hover:bg-white/[0.07]"
       >
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-rose-700 text-sm font-bold text-white">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-white shadow-[0_10px_28px_rgba(95,43,206,0.24)]">
           {initial}
         </span>
         <span className="flex-1 truncate text-sm font-semibold">{trimmed}</span>

@@ -53,8 +53,8 @@ export function SidebarNav({ isAdmin = false }: { isAdmin?: boolean }) {
             className={cn(
               "flex items-center gap-4 rounded-lg px-2 py-2.5 text-base transition-colors",
               active
-                ? "font-semibold text-foreground"
-                : "font-medium text-muted-foreground hover:text-foreground"
+                ? "bg-white/[0.07] font-semibold text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                : "font-medium text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
             )}
           >
             <Icon

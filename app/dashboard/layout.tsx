@@ -15,11 +15,15 @@ export default async function DashboardLayout({
   if (!session) redirect("/login");
 
   return (
-    <div className="flex min-h-full flex-1 flex-col md:flex-row">
-      <aside className="flex shrink-0 flex-col gap-5 border-b bg-sidebar px-4 py-6 md:sticky md:top-0 md:h-screen md:w-[224px] md:border-r md:border-b-0">
+    <div className="dashboard-shell">
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 bg-white/[0.012]"
+      />
+      <aside className="dashboard-sidebar liquid-glass z-20 flex shrink-0 flex-col gap-5 rounded-none border-x-0 border-t-0 px-4 py-6 md:border-y-0 md:border-l-0">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 rounded-sm border border-border-strong bg-card/60 px-3.5 py-3 transition-colors hover:bg-elevated"
+          className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.045] px-3.5 py-3 transition-colors hover:bg-white/[0.07]"
         >
           <span className="whitespace-nowrap text-sm font-extrabold tracking-tight">
             BelajarDuluDek
@@ -37,8 +41,8 @@ export default async function DashboardLayout({
           <SidebarUser name={session.name} />
         </div>
       </aside>
-      <main className="flex-1 px-5 py-8 md:px-12 md:py-10 xl:px-14">
-        <div className="mx-auto w-full max-w-[1628px]">{children}</div>
+      <main className="dashboard-main">
+        <div className="dashboard-content">{children}</div>
       </main>
     </div>
   );

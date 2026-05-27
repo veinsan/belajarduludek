@@ -1,4 +1,15 @@
 import Link from "next/link";
+import type { ComponentType } from "react";
+import {
+  BarChart3,
+  BookOpen,
+  Bot,
+  ChevronRight,
+  FilePenLine,
+  Flame,
+  Grid2X2,
+  PlaySquare,
+} from "lucide-react";
 
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
@@ -8,31 +19,31 @@ import { Reveal } from "@/components/reveal";
 const SHORTCUTS = [
   {
     href: "/dashboard/kelas",
-    icon: "📚",
+    icon: PlaySquare,
     label: "Kelas",
     description: "Video materi MIPA",
   },
   {
     href: "/dashboard/tryout",
-    icon: "📝",
+    icon: FilePenLine,
     label: "Try Out",
     description: "Uji kemampuanmu",
   },
   {
     href: "/dashboard/gemini",
-    icon: "🤖",
+    icon: Bot,
     label: "Copilot AI",
     description: "Chatbot teman belajarmu",
   },
   {
     href: "/dashboard/materials",
-    icon: "📕",
+    icon: BookOpen,
     label: "Perpustakaan",
     description: "Text book, rangkuman, bank soal",
   },
   {
     href: "/dashboard/rangkum",
-    icon: "▦",
+    icon: Grid2X2,
     label: "Lainnya",
     description: "Fitur belajar lain",
   },
@@ -81,49 +92,77 @@ export default async function DashboardPage() {
   const totalQuizzes = stats?.totalQuizzes ?? 0;
 
   return (
-    <div className="flex flex-col gap-12">
-      <Reveal as="section" className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-3xl font-black tracking-tight md:text-4xl">
-          Mau Belajar apa Hari ini?
-        </h1>
-        <p className="max-w-xl text-sm text-muted-foreground md:text-base">
-          Halo, {firstName}. Pilih aktivitas belajar yang mau kamu lanjutkan.
-        </p>
-        <p className="text-xs text-muted-foreground">
-          <span className="font-medium text-foreground">🔥 {currentStreak}</span>{" "}
-          hari streak
-          <span className="mx-2 text-border-strong">·</span>
-          <span className="font-medium text-foreground">📊 {totalQuizzes}</span>{" "}
-          kuis selesai
-        </p>
+    <div className="flex min-w-0 flex-col gap-8 md:gap-10">
+      <Reveal
+        as="section"
+        className="liquid-glass liquid-hero neon-edge grid min-h-[200px] gap-6 rounded-[1.4rem] px-6 py-7 md:grid-cols-[minmax(0,1fr)_auto] md:px-10 md:py-10"
+      >
+        <div className="flex min-w-0 flex-col justify-center gap-4">
+          <div className="flex flex-col gap-3">
+            <h1 className="max-w-3xl text-4xl font-black tracking-tight text-white md:text-5xl">
+              Mau Belajar{" "}
+              <span className="text-primary-light">
+                apa Hari ini?
+              </span>
+            </h1>
+            <p className="text-lg font-medium text-white/74">
+              Halo, {firstName}. <span aria-hidden>👋</span>
+            </p>
+            <p className="max-w-2xl text-sm leading-relaxed text-white/62 md:text-base">
+              Pilih aktivitas belajar yang mau kamu lanjutkan.
+            </p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3 self-center md:w-[300px]">
+          <StatGlass
+            icon={Flame}
+            label="hari streak"
+            value={currentStreak}
+            tone="text-amber-200"
+          />
+          <StatGlass
+            icon={BarChart3}
+            label="kuis selesai"
+            value={totalQuizzes}
+            tone="text-primary-light"
+          />
+        </div>
       </Reveal>
 
       <Reveal
         as="section"
-        className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-5"
+        className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5"
         aria-label="Pintasan"
       >
-        {SHORTCUTS.map((s, index) => (
+        {SHORTCUTS.map((s, index) => {
+          const Icon = s.icon;
+          return (
           <Link
             key={s.href}
             href={s.href}
-            className="animate-enter-up group flex min-h-[130px] items-center justify-between gap-4 rounded-xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-border-strong hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+            className="liquid-card neon-edge animate-enter-up group flex min-h-[168px] flex-col items-start justify-between overflow-hidden rounded-[1.25rem] p-5 transition-all hover:-translate-y-1 hover:border-primary-light/35 hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
             style={{ animationDelay: `${index * 70}ms` }}
           >
+            <div className="flex w-full items-start justify-between gap-3">
+              <span
+                aria-hidden
+                className="relative flex size-14 shrink-0 items-center justify-center rounded-2xl border border-primary-light/25 bg-primary/18 text-primary-light shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_12px_28px_rgba(0,0,0,0.18)] transition-transform group-hover:scale-105"
+              >
+                <Icon className="size-7 drop-shadow-[0_0_8px_rgba(255,255,255,0.13)]" />
+              </span>
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/14 text-primary-light transition-all group-hover:bg-primary/22 group-hover:text-white">
+                <ChevronRight className="size-5" />
+              </span>
+            </div>
             <div className="flex flex-col">
-              <span className="text-lg font-bold leading-tight">{s.label}</span>
-              <span className="text-sm leading-snug text-muted-foreground">
+              <span className="text-xl font-bold leading-tight">{s.label}</span>
+              <span className="mt-1 text-sm leading-snug text-muted-foreground">
                 {s.description}
               </span>
             </div>
-            <span
-              aria-hidden
-              className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-2xl"
-            >
-              {s.icon}
-            </span>
           </Link>
-        ))}
+          );
+        })}
       </Reveal>
 
       <Reveal>
@@ -147,6 +186,26 @@ export default async function DashboardPage() {
           }))}
         />
       </Reveal>
+    </div>
+  );
+}
+
+function StatGlass({
+  icon: Icon,
+  label,
+  value,
+  tone,
+}: {
+  icon: ComponentType<{ className?: string }>;
+  label: string;
+  value: number;
+  tone: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/12 bg-white/[0.065] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.13),0_18px_50px_rgba(0,0,0,0.18)] backdrop-blur-xl">
+      <Icon className={`mb-3 size-5 ${tone}`} />
+      <p className="text-2xl font-black tracking-tight">{value}</p>
+      <p className="text-xs text-white/62">{label}</p>
     </div>
   );
 }

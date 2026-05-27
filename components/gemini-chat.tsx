@@ -124,7 +124,7 @@ export function GeminiChat() {
             ))}
             {sending ? (
               <li className="mr-auto flex items-center gap-2 rounded-xl bg-elevated px-4 py-3 text-sm text-muted-foreground">
-                <span className="size-2 animate-pulse rounded-full bg-primary-light" />
+                <span className="size-2 animate-pulse rounded-full bg-primary-light"/>
                 Gemini sedang mengetik...
               </li>
             ) : null}
