@@ -53,12 +53,12 @@ export async function POST(request: Request) {
 
   const hashed = await bcrypt.hash(password, 10);
   await prisma.user.create({
-    data: { email, name, password: hashed },
+    data: { email, name, password: hashed, status: "APPROVED" },
     select: { id: true },
   });
 
   return Response.json(
-    { message: "Akun menunggu persetujuan admin" },
+    { message: "Akun berhasil dibuat. Silakan login." },
     { status: 201 }
   );
 }

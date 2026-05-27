@@ -16,16 +16,30 @@ export default async function MaterialsPage() {
   const session = await getSession();
   if (!session) return null;
 
-  const materials = await prisma.material.findMany({
-    where: { userId: session.sub },
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      title: true,
-      createdAt: true,
-      summary: true,
-    },
-  });
+  const [materials, books] = await Promise.all([
+    prisma.material.findMany({
+      where: { userId: session.sub },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        createdAt: true,
+        summary: true,
+      },
+    }),
+    prisma.adminBook.findMany({
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        author: true,
+        description: true,
+        coverUrl: true,
+        pdfUrl: true,
+        updatedAt: true,
+      },
+    }),
+  ]);
 
   const summarizedCount = materials.filter((m) => m.summary).length;
 
@@ -53,6 +67,27 @@ export default async function MaterialsPage() {
           </Button>
         </div>
       </section>
+
+      {books.length > 0 ? (
+        <CardRow
+          title="Buku dari admin"
+          viewAllHref="/dashboard/materials"
+          viewAllLabel="Perpustakaan"
+        >
+          {books.map((book) => (
+            <BookCard
+              key={book.id}
+              id={book.id}
+              title={book.title}
+              author={book.author}
+              description={book.description}
+              coverUrl={book.coverUrl}
+              hasPdf={Boolean(book.pdfUrl)}
+              updatedAt={book.updatedAt}
+            />
+          ))}
+        </CardRow>
+      ) : null}
 
       <CardRow
         title="Semua materi"
@@ -111,6 +146,72 @@ function MaterialCard({
         <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
           {dateFormatter.format(createdAt)}
         </p>
+      </Card>
+    </Link>
+  );
+}
+
+function BookCard({
+  id,
+  title,
+  author,
+  description,
+  coverUrl,
+  hasPdf,
+  updatedAt,
+}: {
+  id: string;
+  title: string;
+  author: string | null;
+  description: string | null;
+  coverUrl: string | null;
+  hasPdf: boolean;
+  updatedAt: Date;
+}) {
+  return (
+    <Link
+      href={`/dashboard/books/${id}`}
+      className="group block w-[280px] shrink-0 snap-start rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+    >
+      <Card className="flex h-[190px] flex-row overflow-hidden p-0 transition-colors group-hover:border-border-strong group-hover:bg-elevated">
+        <div className="w-24 shrink-0 bg-elevated">
+          {coverUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={coverUrl}
+              alt=""
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center px-3 text-center text-xs font-semibold text-primary">
+              Buku
+            </div>
+          )}
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col justify-between p-4">
+          <div className="flex flex-col gap-2">
+            <span className="w-fit rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-light">
+              {hasPdf ? "PDF admin" : "Buku admin"}
+            </span>
+            <p className="line-clamp-2 text-base font-bold leading-snug">
+              {title}
+            </p>
+            {author ? (
+              <p className="truncate text-xs text-muted-foreground">
+                {author}
+              </p>
+            ) : null}
+            {description ? (
+              <p className="line-clamp-2 text-xs text-muted-foreground">
+                {description}
+              </p>
+            ) : null}
+          </div>
+          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            {dateFormatter.format(updatedAt)}
+          </p>
+        </div>
       </Card>
     </Link>
   );

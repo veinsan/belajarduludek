@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { KelasBrowser } from "@/components/kelas-browser";
 import { Reveal } from "@/components/reveal";
@@ -5,6 +6,18 @@ import { Reveal } from "@/components/reveal";
 export default async function KelasPage() {
   const session = await getSession();
   if (!session) return null;
+
+  const adminClasses = await prisma.adminClass.findMany({
+    orderBy: { updatedAt: "desc" },
+    select: {
+      id: true,
+      title: true,
+      subject: true,
+      description: true,
+      videoId: true,
+      thumbnailUrl: true,
+    },
+  });
 
   return (
     <div className="flex flex-col gap-10">
@@ -24,7 +37,14 @@ export default async function KelasPage() {
       </Reveal>
 
       <Reveal>
-        <KelasBrowser />
+        <KelasBrowser
+          adminClasses={adminClasses.map((item) => ({
+            ...item,
+            description: item.description ?? null,
+            videoId: item.videoId ?? null,
+            thumbnailUrl: item.thumbnailUrl ?? null,
+          }))}
+        />
       </Reveal>
     </div>
   );

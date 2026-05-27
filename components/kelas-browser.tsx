@@ -22,12 +22,25 @@ type KelasVideo = {
   thumbnail: string;
 };
 
+type AdminClass = {
+  id: string;
+  title: string;
+  subject: string;
+  description: string | null;
+  videoId: string | null;
+  thumbnailUrl: string | null;
+};
+
 type LoadState =
   | { status: "loading" }
   | { status: "error"; message: string }
   | { status: "ready"; videos: KelasVideo[] };
 
-export function KelasBrowser() {
+export function KelasBrowser({
+  adminClasses = [],
+}: {
+  adminClasses?: AdminClass[];
+}) {
   const [subject, setSubject] = React.useState<SubjectKey>("fisika");
   const [load, setLoad] = React.useState<LoadState>({ status: "loading" });
 
@@ -69,6 +82,64 @@ export function KelasBrowser() {
 
   return (
     <div className="flex flex-col gap-6">
+      {adminClasses.length > 0 ? (
+        <section className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-sm font-semibold tracking-tight text-muted-foreground">
+              Kelas dari admin
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              Materi pilihan yang ditambahkan admin.
+            </p>
+          </div>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {adminClasses.map((item, index) => (
+              <li
+                key={item.id}
+                className="animate-enter-up"
+                style={{ animationDelay: `${index * 55}ms` }}
+              >
+                <Link
+                  href={`/dashboard/kelas/custom/${item.id}`}
+                  className="group block rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                >
+                  <Card className="flex h-full flex-col overflow-hidden p-0 transition-all group-hover:-translate-y-1 group-hover:border-border-strong group-hover:bg-elevated">
+                    <div className="aspect-video w-full overflow-hidden bg-elevated">
+                      {item.thumbnailUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={item.thumbnailUrl}
+                          alt=""
+                          className="h-full w-full object-cover transition-transform group-hover:scale-[1.02]"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-primary/10 px-6 text-center text-sm font-semibold text-primary">
+                          {item.subject}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-2 p-4">
+                      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                        {item.subject}
+                      </p>
+                      <h3 className="line-clamp-2 text-sm font-bold leading-snug">
+                        {item.title}
+                      </h3>
+                      {item.description ? (
+                        <p className="line-clamp-2 text-xs text-muted-foreground">
+                          {item.description}
+                        </p>
+                      ) : null}
+                    </div>
+                  </Card>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       <nav
         className="scrollbar-hide flex gap-2 overflow-x-auto"
         aria-label="Pilih mata pelajaran"

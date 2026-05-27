@@ -16,18 +16,30 @@ export default async function TryoutPage() {
   const session = await getSession();
   if (!session) return null;
 
-  const decks = await prisma.deck.findMany({
-    where: { userId: session.sub },
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      title: true,
-      cards: {
-        orderBy: { createdAt: "asc" },
-        select: { id: true, front: true, back: true },
+  const [decks, adminTryouts] = await Promise.all([
+    prisma.deck.findMany({
+      where: { userId: session.sub },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        cards: {
+          orderBy: { createdAt: "asc" },
+          select: { id: true, front: true, back: true },
+        },
       },
-    },
-  });
+    }),
+    prisma.adminTryout.findMany({
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        durationMinutes: true,
+        questions: true,
+      },
+    }),
+  ]);
 
   const eligibleDecks = decks.filter((d) => d.cards.length > 0);
   const totalCards = eligibleDecks.reduce(
@@ -71,6 +83,53 @@ export default async function TryoutPage() {
           </div>
         ) : null}
       </Reveal>
+
+      {adminTryouts.length > 0 ? (
+        <Reveal delay={80}>
+          <section className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
+              <h2 className="text-sm font-semibold tracking-tight text-muted-foreground">
+                Tryout dari admin
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Paket latihan yang disiapkan admin untuk semua pengguna.
+              </p>
+            </div>
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {adminTryouts.map((tryout) => {
+                const count = Array.isArray(tryout.questions)
+                  ? tryout.questions.length
+                  : 0;
+                return (
+                  <Card key={tryout.id}>
+                    <CardHeader>
+                      <CardTitle className="leading-snug">
+                        {tryout.title}
+                      </CardTitle>
+                      <CardDescription>
+                        {tryout.description ?? "Paket tryout siap dikerjakan."}
+                      </CardDescription>
+                    </CardHeader>
+                    <div className="flex flex-wrap items-center justify-between gap-3 px-6 pb-6">
+                      <p className="text-xs text-muted-foreground">
+                        {count} soal
+                        {tryout.durationMinutes
+                          ? ` · ${tryout.durationMinutes} menit`
+                          : ""}
+                      </p>
+                      <Button asChild size="sm">
+                        <Link href={`/dashboard/tryout/${tryout.id}`}>
+                          Mulai
+                        </Link>
+                      </Button>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </section>
+        </Reveal>
+      ) : null}
 
       {eligibleDecks.length > 0 ? (
         <Reveal delay={120}>

@@ -111,6 +111,11 @@ function LoginForm() {
             {submitting ? "Memproses..." : "Masuk"}
           </Button>
           <p className="text-sm text-muted-foreground">
+            <Link href="/forgot" className="font-medium underline-offset-4 hover:underline">
+              Lupa kata sandi?
+            </Link>
+          </p>
+          <p className="text-sm text-muted-foreground">
             Belum punya akun?{" "}
             <Link href="/register" className="font-medium text-foreground underline-offset-4 hover:underline">
               Daftar dulu

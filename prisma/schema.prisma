@@ -19,17 +19,56 @@ enum Status {
 }
 
 model User {
-  id        String         @id @default(cuid())
-  email     String         @unique
-  name      String
-  password  String
-  role      Role           @default(MURID)
-  status    Status         @default(PENDING)
-  createdAt DateTime       @default(now())
-  decks     Deck[]
-  materials Material[]
-  stats     UserStats?
-  paths     LearningPath[]
+  id             String          @id @default(cuid())
+  email          String          @unique
+  name           String
+  password       String
+  role           Role            @default(MURID)
+  status         Status          @default(PENDING)
+  createdAt      DateTime        @default(now())
+  decks          Deck[]
+  materials      Material[]
+  stats          UserStats?
+  paths          LearningPath[]
+  passwordResets PasswordReset[]
+}
+
+model AdminClass {
+  id           String   @id @default(cuid())
+  title        String
+  subject      String
+  description  String?  @db.Text
+  content      String?  @db.Text
+  videoId      String?
+  thumbnailUrl String?
+  createdById  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model AdminTryout {
+  id              String   @id @default(cuid())
+  title           String
+  description     String?  @db.Text
+  durationMinutes Int?
+  questions       Json
+  createdById     String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model AdminBook {
+  id          String   @id @default(cuid())
+  title       String
+  author      String?
+  description String?  @db.Text
+  content     String   @default("") @db.Text
+  coverUrl    String?
+  pdfUrl      String?
+  pdfFileName String?
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Deck {
@@ -54,12 +93,12 @@ model Flashcard {
 }
 
 model Quiz {
-  id        String     @id @default(cuid())
+  id        String   @id @default(cuid())
   score     Int
   total     Int
-  createdAt DateTime   @default(now())
+  createdAt DateTime @default(now())
   deckId    String
-  deck      Deck       @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  deck      Deck     @relation(fields: [deckId], references: [id], onDelete: Cascade)
   userId    String
 }
 
@@ -99,4 +138,13 @@ model PathStep {
   path   LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
   deckId String
   deck   Deck         @relation(fields: [deckId], references: [id])
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
