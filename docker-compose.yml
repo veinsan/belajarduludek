@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: belajarduludek
+      POSTGRES_USER: belajarduludek
+      POSTGRES_PASSWORD: cXEwpc62MRTMaRTf
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
