@@ -31,7 +31,7 @@ export default async function DashboardLayout({
 
         <SidebarSearch />
 
-        <SidebarNav />
+        <SidebarNav isAdmin={session.role === "SUPERADMIN"} />
 
         <div className="mt-auto">
           <SidebarUser name={session.name} />

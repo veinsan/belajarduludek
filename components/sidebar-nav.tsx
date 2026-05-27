@@ -8,6 +8,7 @@ import {
   Library,
   Monitor,
   PencilLine,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 
@@ -27,12 +28,19 @@ const items: NavItem[] = [
   { href: "/dashboard/materials", label: "Rangkuman", icon: Library },
 ];
 
-export function SidebarNav() {
+const adminItem: NavItem = {
+  href: "/dashboard/admin",
+  label: "Admin",
+  icon: ShieldCheck,
+};
+
+export function SidebarNav({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
+  const navItems = isAdmin ? [...items, adminItem] : items;
 
   return (
     <nav className="flex flex-col gap-1">
-      {items.map((item) => {
+      {navItems.map((item) => {
         const active =
           item.href === "/dashboard"
             ? pathname === "/dashboard"

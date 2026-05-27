@@ -47,7 +47,20 @@ export async function POST(request: Request) {
     );
   }
 
-  const token = signSession({ sub: user.id, email: user.email, name: user.name });
+  if (user.status !== "APPROVED") {
+    return Response.json(
+      { error: "Akun belum disetujui admin" },
+      { status: 403 }
+    );
+  }
+
+  const token = signSession({
+    sub: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    status: user.status,
+  });
   const cookieStore = await cookies();
   cookieStore.set(AUTH_COOKIE, token, authCookieOptions());
 

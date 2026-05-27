@@ -1,8 +1,6 @@
-import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "@/lib/prisma";
-import { AUTH_COOKIE, authCookieOptions, signSession } from "@/lib/auth";
 
 type RegisterBody = {
   email?: unknown;
@@ -54,17 +52,13 @@ export async function POST(request: Request) {
   }
 
   const hashed = await bcrypt.hash(password, 10);
-  const user = await prisma.user.create({
+  await prisma.user.create({
     data: { email, name, password: hashed },
-    select: { id: true, email: true, name: true },
+    select: { id: true },
   });
 
-  const token = signSession({ sub: user.id, email: user.email, name: user.name });
-  const cookieStore = await cookies();
-  cookieStore.set(AUTH_COOKIE, token, authCookieOptions());
-
   return Response.json(
-    { user: { id: user.id, email: user.email, name: user.name } },
+    { message: "Akun menunggu persetujuan admin" },
     { status: 201 }
   );
 }
