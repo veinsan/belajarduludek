@@ -2,9 +2,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { getSession } from "@/lib/auth";
-import { LogoutButton } from "@/components/logout-button";
-import { AiChat } from "@/components/ai-chat";
 import { SidebarNav } from "@/components/sidebar-nav";
+import { SidebarSearch } from "@/components/sidebar-search";
+import { SidebarUser } from "@/components/sidebar-user";
 
 export default async function DashboardLayout({
   children,
@@ -16,30 +16,30 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-full flex-1 flex-col md:flex-row">
-      <aside className="flex shrink-0 flex-col gap-7 border-b bg-sidebar px-6 py-6 md:sticky md:top-0 md:h-screen md:w-[300px] md:border-r md:border-b-0 md:px-7 md:py-7">
+      <aside className="flex shrink-0 flex-col gap-5 border-b bg-sidebar px-4 py-6 md:sticky md:top-0 md:h-screen md:w-[224px] md:border-r md:border-b-0">
         <Link
           href="/dashboard"
-          className="text-base font-extrabold tracking-tight"
+          className="flex items-center gap-2 rounded-sm border border-border-strong bg-card/60 px-3.5 py-3 transition-colors hover:bg-elevated"
         >
-          BelajarDuluDek
+          <span className="whitespace-nowrap text-sm font-extrabold tracking-tight">
+            BelajarDuluDek
+          </span>
+          <span className="shrink-0 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">
+            SMA
+          </span>
         </Link>
+
+        <SidebarSearch />
+
         <SidebarNav />
-        <div className="mt-auto flex flex-col gap-3 border-t border-sidebar-border pt-4">
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Masuk sebagai
-            </span>
-            <span className="truncate text-sm font-medium">
-              {session.name}
-            </span>
-          </div>
-          <LogoutButton />
+
+        <div className="mt-auto">
+          <SidebarUser name={session.name} />
         </div>
       </aside>
       <main className="flex-1 px-5 py-8 md:px-12 md:py-10 xl:px-14">
         <div className="mx-auto w-full max-w-[1628px]">{children}</div>
       </main>
-      <AiChat />
     </div>
   );
 }

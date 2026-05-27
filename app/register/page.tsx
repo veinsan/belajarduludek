@@ -66,7 +66,6 @@ export default function RegisterPage() {
                 id="name"
                 type="text"
                 autoComplete="name"
-                placeholder="Nama Kamu"
                 className="border-border-strong bg-elevated/40"
                 required
                 value={name}
@@ -79,7 +78,6 @@ export default function RegisterPage() {
                 id="email"
                 type="email"
                 autoComplete="email"
-                placeholder="contoh@email.com"
                 className="border-border-strong bg-elevated/40"
                 required
                 value={email}
@@ -92,7 +90,6 @@ export default function RegisterPage() {
                 id="password"
                 type="password"
                 autoComplete="new-password"
-                placeholder="rahasia123"
                 className="border-border-strong bg-elevated/40"
                 required
                 minLength={8}
@@ -100,7 +97,7 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                Minimal 8 karakter.
+                Minimal 8 karakter
               </p>
             </div>
             {error ? (

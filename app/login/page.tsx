@@ -75,7 +75,6 @@ function LoginForm() {
                 id="email"
                 type="email"
                 autoComplete="email"
-                placeholder="contoh@email.com"
                 className="border-border-strong bg-elevated/40"
                 required
                 value={email}
@@ -88,7 +87,6 @@ function LoginForm() {
                 id="password"
                 type="password"
                 autoComplete="current-password"
-                placeholder="rahasia123"
                 className="border-border-strong bg-elevated/40"
                 required
                 value={password}
