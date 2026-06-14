@@ -16,14 +16,14 @@ function useCountUp(target: number, durationMs = 1100) {
   const [value, setValue] = React.useState(0);
 
   React.useEffect(() => {
+    let raf = 0;
     if (
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
-      setValue(target);
-      return;
+      raf = requestAnimationFrame(() => setValue(target));
+      return () => cancelAnimationFrame(raf);
     }
-    let raf = 0;
     const start = performance.now();
     const tick = (now: number) => {
       const t = Math.min((now - start) / durationMs, 1);
