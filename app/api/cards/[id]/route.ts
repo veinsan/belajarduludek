@@ -55,7 +55,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
   const card = await prisma.flashcard.update({
     where: { id },
     data: { front, back },
-    select: { id: true, front: true, back: true, createdAt: true },
+    select: { id: true, front: true, back: true, imageUrl: true, createdAt: true },
   });
 
   return Response.json({ card });

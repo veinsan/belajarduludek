@@ -35,6 +35,15 @@ export default async function AdminPage() {
 
   const pending = users.filter((u) => u.status === "PENDING");
   const approved = users.filter((u) => u.status === "APPROVED");
+  const rejected = users.filter((u) => u.status === "REJECTED");
+
+  const toAdminUser = (u: (typeof users)[number]) => ({
+    id: u.id,
+    email: u.email,
+    name: u.name,
+    role: u.role,
+    createdAt: u.createdAt.toISOString(),
+  });
 
   return (
     <div className="flex flex-col gap-8">
@@ -49,20 +58,9 @@ export default async function AdminPage() {
 
       <AdminUsers
         currentUserId={session.sub}
-        pending={pending.map((u) => ({
-          id: u.id,
-          email: u.email,
-          name: u.name,
-          role: u.role,
-          createdAt: u.createdAt.toISOString(),
-        }))}
-        approved={approved.map((u) => ({
-          id: u.id,
-          email: u.email,
-          name: u.name,
-          role: u.role,
-          createdAt: u.createdAt.toISOString(),
-        }))}
+        pending={pending.map(toAdminUser)}
+        approved={approved.map(toAdminUser)}
+        rejected={rejected.map(toAdminUser)}
       />
 
       <section className="flex flex-col gap-4">

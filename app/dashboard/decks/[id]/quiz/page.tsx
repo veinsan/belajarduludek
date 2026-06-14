@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { deckAccessWhere } from "@/lib/access";
 import { QUIZ_MIN_CARDS, generateQuizQuestions } from "@/lib/quiz";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,11 +24,11 @@ export default async function QuizPage({ params }: PageProps) {
 
   const { id } = await params;
   const deck = await prisma.deck.findFirst({
-    where: { id, userId: session.sub },
+    where: { id, ...deckAccessWhere(session.sub) },
     select: {
       id: true,
       title: true,
-      cards: { select: { id: true, front: true, back: true } },
+      cards: { select: { id: true, front: true, back: true, imageUrl: true } },
     },
   });
 

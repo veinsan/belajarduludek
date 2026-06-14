@@ -32,6 +32,8 @@ function LoginForm() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
+  // 403 = akun belum/tidak disetujui — tampil sebagai pemberitahuan, bukan error.
+  const [errorKind, setErrorKind] = React.useState<"error" | "notice">("error");
   const [submitting, setSubmitting] = React.useState(false);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -46,6 +48,7 @@ function LoginForm() {
       });
       const data = (await res.json()) as { error?: string };
       if (!res.ok) {
+        setErrorKind(res.status === 403 ? "notice" : "error");
         setError(data.error ?? "Gagal masuk.");
         return;
       }
@@ -94,9 +97,18 @@ function LoginForm() {
               />
             </div>
             {error ? (
-              <p className="text-sm text-destructive" role="alert">
-                {error}
-              </p>
+              errorKind === "notice" ? (
+                <p
+                  className="rounded-lg border border-amber-300/30 bg-amber-400/10 px-3 py-2.5 text-sm leading-relaxed text-amber-200"
+                  role="alert"
+                >
+                  {error}
+                </p>
+              ) : (
+                <p className="text-sm text-destructive" role="alert">
+                  {error}
+                </p>
+              )
             ) : null}
           </form>
         </CardContent>

@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { GraduationCap } from "lucide-react";
 
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { teacherContentWhere } from "@/lib/access";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CardRow } from "@/components/card-row";
@@ -16,7 +18,7 @@ export default async function MaterialsPage() {
   const session = await getSession();
   if (!session) return null;
 
-  const [materials, books] = await Promise.all([
+  const [materials, teacherMaterials, books] = await Promise.all([
     prisma.material.findMany({
       where: { userId: session.sub },
       orderBy: { createdAt: "desc" },
@@ -25,6 +27,17 @@ export default async function MaterialsPage() {
         title: true,
         createdAt: true,
         summary: true,
+      },
+    }),
+    prisma.material.findMany({
+      where: teacherContentWhere(session.sub),
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        createdAt: true,
+        summary: true,
+        user: { select: { name: true } },
       },
     }),
     prisma.adminBook
@@ -69,6 +82,21 @@ export default async function MaterialsPage() {
           </Button>
         </div>
       </section>
+
+      {teacherMaterials.length > 0 ? (
+        <CardRow title="Materi dari Guru">
+          {teacherMaterials.map((material) => (
+            <TeacherMaterialCard
+              key={material.id}
+              id={material.id}
+              title={material.title}
+              createdAt={material.createdAt}
+              hasSummary={Boolean(material.summary)}
+              ownerName={material.user.name}
+            />
+          ))}
+        </CardRow>
+      ) : null}
 
       {books.length > 0 ? (
         <CardRow
@@ -148,6 +176,45 @@ function MaterialCard({
         <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
           {dateFormatter.format(createdAt)}
         </p>
+      </Card>
+    </Link>
+  );
+}
+
+function TeacherMaterialCard({
+  id,
+  title,
+  createdAt,
+  hasSummary,
+  ownerName,
+}: {
+  id: string;
+  title: string;
+  createdAt: Date;
+  hasSummary: boolean;
+  ownerName: string;
+}) {
+  return (
+    <Link
+      href={`/dashboard/materials/${id}`}
+      className="group block w-[260px] shrink-0 snap-start rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+    >
+      <Card className="flex h-[160px] flex-col justify-between border-sky-300/20 p-5 transition-colors group-hover:border-sky-300/40 group-hover:bg-elevated">
+        <div className="flex flex-col gap-2">
+          <span className="flex w-fit items-center gap-1 rounded-full border border-sky-300/30 bg-sky-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-sky-300">
+            <GraduationCap className="size-3" aria-hidden />
+            {ownerName}
+          </span>
+          <p className="line-clamp-2 text-base font-bold leading-snug">
+            {title}
+          </p>
+        </div>
+        <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-muted-foreground">
+          <span>{dateFormatter.format(createdAt)}</span>
+          {hasSummary ? (
+            <span className="text-primary-light">Diringkas</span>
+          ) : null}
+        </div>
       </Card>
     </Link>
   );

@@ -1,11 +1,19 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { FilePenLine, NotebookTabs, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-export function MaterialActions({ materialId }: { materialId: string }) {
+export function MaterialActions({
+  materialId,
+  hasSummary = false,
+}: {
+  materialId: string;
+  hasSummary?: boolean;
+}) {
   const router = useRouter();
   const [summarizing, setSummarizing] = React.useState(false);
   const [generating, setGenerating] = React.useState(false);
@@ -68,10 +76,27 @@ export function MaterialActions({ materialId }: { materialId: string }) {
           onClick={onSummarize}
           disabled={busy}
         >
-          {summarizing ? "Memproses..." : "Buat Ringkasan"}
+          <Sparkles />
+          {summarizing
+            ? "Memproses..."
+            : hasSummary
+              ? "Ringkas Ulang"
+              : "Buat Ringkasan"}
         </Button>
-        <Button type="button" onClick={onGenerateDeck} disabled={busy}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onGenerateDeck}
+          disabled={busy}
+        >
+          <NotebookTabs />
           {generating ? "Memproses..." : "Generate Deck"}
+        </Button>
+        <Button asChild disabled={busy}>
+          <Link href={`/dashboard/materials/${materialId}/quiz`}>
+            <FilePenLine />
+            Kuis AI
+          </Link>
         </Button>
       </div>
       {error ? (

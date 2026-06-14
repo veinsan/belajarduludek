@@ -47,9 +47,21 @@ export async function POST(request: Request) {
     );
   }
 
+  if (user.status === "PENDING") {
+    return Response.json(
+      {
+        error:
+          "Akun kamu masih menunggu persetujuan admin. Coba lagi nanti ya!",
+      },
+      { status: 403 }
+    );
+  }
   if (user.status !== "APPROVED") {
     return Response.json(
-      { error: "Akun belum disetujui admin" },
+      {
+        error:
+          "Pendaftaran akun kamu ditolak admin. Hubungi admin sekolah kalau menurutmu ini keliru.",
+      },
       { status: 403 }
     );
   }

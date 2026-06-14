@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { deckAccessWhere } from "@/lib/access";
 import { QUIZ_MIN_CARDS, generateQuizQuestions } from "@/lib/quiz";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -12,10 +13,10 @@ export async function GET(_request: Request, { params }: RouteContext) {
 
   const { id } = await params;
   const deck = await prisma.deck.findFirst({
-    where: { id, userId: session.sub },
+    where: { id, ...deckAccessWhere(session.sub) },
     select: {
       id: true,
-      cards: { select: { id: true, front: true, back: true } },
+      cards: { select: { id: true, front: true, back: true, imageUrl: true } },
     },
   });
 
@@ -71,8 +72,9 @@ export async function POST(request: Request, { params }: RouteContext) {
   }
 
   const { id } = await params;
+  // Murid boleh menyimpan skor kuis dari deck guru, bukan hanya deck sendiri.
   const deck = await prisma.deck.findFirst({
-    where: { id, userId: session.sub },
+    where: { id, ...deckAccessWhere(session.sub) },
     select: { id: true },
   });
   if (!deck) {

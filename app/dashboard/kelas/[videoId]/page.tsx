@@ -74,7 +74,7 @@ export default async function KelasVideoPage({ params }: PageProps) {
         </div>
       </div>
 
-      <KelasExplanation videoId={videoId} title={meta.title} />
+      <KelasExplanation key={videoId} videoId={videoId} title={meta.title} />
     </div>
   );
 }

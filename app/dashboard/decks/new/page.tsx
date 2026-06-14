@@ -98,7 +98,7 @@ export default function NewDeckPage() {
         </CardContent>
         <CardFooter className="flex items-center justify-end gap-2">
           <Button asChild variant="ghost">
-            <Link href="/dashboard">Batal</Link>
+            <Link href="/dashboard/decks">Batal</Link>
           </Button>
           <Button
             type="submit"

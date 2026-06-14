@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { GraduationCap, MailCheck, Presentation } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,15 +15,38 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+
+type RoleChoice = "MURID" | "GURU";
+
+const ROLE_CHOICES: {
+  value: RoleChoice;
+  label: string;
+  description: string;
+  icon: typeof GraduationCap;
+}[] = [
+  {
+    value: "MURID",
+    label: "Murid",
+    description: "Belajar dari deck & materi",
+    icon: GraduationCap,
+  },
+  {
+    value: "GURU",
+    label: "Guru",
+    description: "Buat konten untuk murid",
+    icon: Presentation,
+  },
+];
 
 export default function RegisterPage() {
-  const router = useRouter();
-
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [role, setRole] = React.useState<RoleChoice>("MURID");
   const [error, setError] = React.useState<string | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
+  const [registered, setRegistered] = React.useState(false);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -33,20 +56,44 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, role }),
       });
       const data = (await res.json()) as { error?: string };
       if (!res.ok) {
         setError(data.error ?? "Gagal mendaftar.");
         return;
       }
-      router.push("/dashboard");
-      router.refresh();
+      setRegistered(true);
     } catch {
       setError("Tidak dapat terhubung ke server.");
     } finally {
       setSubmitting(false);
     }
+  }
+
+  if (registered) {
+    return (
+      <div className="flex flex-1 items-center justify-center px-4 py-12">
+        <Card className="animate-enter-up w-full max-w-sm border-border-strong text-center shadow-[0_24px_70px_rgba(0,0,0,0.25)]">
+          <CardHeader className="items-center">
+            <span className="mx-auto mb-2 flex size-14 items-center justify-center rounded-2xl border border-primary-light/30 bg-primary/20 text-primary-light">
+              <MailCheck className="size-7" />
+            </span>
+            <CardTitle>Pendaftaran terkirim!</CardTitle>
+            <CardDescription>
+              Akun <span className="font-semibold text-foreground">{email}</span>{" "}
+              sedang menunggu persetujuan admin. Setelah disetujui, kamu bisa
+              langsung masuk.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="flex flex-col gap-3">
+            <Button asChild size="lg" className="w-full">
+              <Link href="/login">Ke halaman masuk</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
   }
 
   return (
@@ -55,11 +102,46 @@ export default function RegisterPage() {
         <CardHeader className="animate-enter-up animation-delay-100">
           <CardTitle>Daftar akun baru</CardTitle>
           <CardDescription>
-            Buat akun untuk menyimpan deck flashcard dan riwayat kuismu.
+            Akun baru ditinjau dulu oleh admin sebelum bisa dipakai.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form id="register-form" onSubmit={onSubmit} className="flex flex-col gap-4">
+            <div className="animate-enter-up animation-delay-100 flex flex-col gap-2">
+              <Label>Daftar sebagai</Label>
+              <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Pilih peran">
+                {ROLE_CHOICES.map((choice) => {
+                  const isActive = role === choice.value;
+                  const Icon = choice.icon;
+                  return (
+                    <button
+                      key={choice.value}
+                      type="button"
+                      role="radio"
+                      aria-checked={isActive}
+                      onClick={() => setRole(choice.value)}
+                      className={cn(
+                        "flex flex-col items-start gap-1 rounded-xl border px-3 py-2.5 text-left transition-all outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+                        isActive
+                          ? "border-primary-light/50 bg-primary/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                          : "border-border-strong bg-elevated/40 hover:border-border-strong hover:bg-elevated"
+                      )}
+                    >
+                      <Icon
+                        className={cn(
+                          "size-4",
+                          isActive ? "text-primary-light" : "text-muted-foreground"
+                        )}
+                      />
+                      <span className="text-sm font-semibold">{choice.label}</span>
+                      <span className="text-[11px] leading-tight text-muted-foreground">
+                        {choice.description}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
             <div className="animate-enter-up animation-delay-200 flex flex-col gap-2">
               <Label htmlFor="name">Nama lengkap</Label>
               <Input

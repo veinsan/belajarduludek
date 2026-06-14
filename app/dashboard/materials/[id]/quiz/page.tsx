@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { materialAccessWhere } from "@/lib/access";
 import { MaterialQuizRunner } from "@/components/material-quiz-runner";
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -13,7 +14,7 @@ export default async function MaterialQuizPage({ params }: PageProps) {
 
   const { id } = await params;
   const material = await prisma.material.findFirst({
-    where: { id, userId: session.sub },
+    where: { id, ...materialAccessWhere(session.sub) },
     select: { id: true, title: true },
   });
 

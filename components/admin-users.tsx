@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Check, ShieldCheck, X } from "lucide-react";
+import { Check, Clock3, RotateCcw, ShieldCheck, Trash2, UserX, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -45,15 +45,17 @@ export function AdminUsers({
   currentUserId,
   pending,
   approved,
+  rejected,
 }: {
   currentUserId: string;
   pending: AdminUser[];
   approved: AdminUser[];
+  rejected: AdminUser[];
 }) {
   const router = useRouter();
   const [busyId, setBusyId] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
-  // Role chosen in each pending row's dropdown before approval.
+  // Role chosen in each pending/rejected row's dropdown before approval.
   const [roleChoice, setRoleChoice] = React.useState<Record<string, Role>>({});
 
   async function send(
@@ -84,6 +86,35 @@ export function AdminUsers({
     }
   }
 
+  function RoleSelect({ user }: { user: AdminUser }) {
+    const chosen = roleChoice[user.id] ?? user.role;
+    return (
+      <>
+        <label className="sr-only" htmlFor={`role-${user.id}`}>
+          Peran untuk {user.name}
+        </label>
+        <select
+          id={`role-${user.id}`}
+          className={selectClass}
+          value={chosen}
+          disabled={busyId === user.id}
+          onChange={(e) =>
+            setRoleChoice((prev) => ({
+              ...prev,
+              [user.id]: e.target.value as Role,
+            }))
+          }
+        >
+          {ROLE_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+      </>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-8">
       {error && (
@@ -94,6 +125,7 @@ export function AdminUsers({
 
       <section className="flex flex-col gap-3">
         <h2 className="flex items-center gap-2 text-sm font-semibold tracking-tight text-muted-foreground">
+          <Clock3 className="size-4 text-amber-300" />
           Menunggu persetujuan
           <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">
             {pending.length}
@@ -101,18 +133,21 @@ export function AdminUsers({
         </h2>
 
         {pending.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            Tidak ada akun yang menunggu persetujuan.
-          </p>
+          <div className="flex items-center gap-3 rounded-xl border border-dashed border-white/15 bg-white/[0.03] px-4 py-4">
+            <ShieldCheck className="size-5 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">
+              Semua beres — tidak ada akun yang menunggu persetujuan.
+            </p>
+          </div>
         ) : (
           <div className="flex flex-col gap-2">
             {pending.map((u) => {
-              const chosen = roleChoice[u.id] ?? "MURID";
+              const chosen = roleChoice[u.id] ?? u.role;
               const busy = busyId === u.id;
               return (
                 <Card
                   key={u.id}
-                  className="flex flex-row flex-wrap items-center justify-between gap-3 px-4 py-3"
+                  className="flex flex-row flex-wrap items-center justify-between gap-3 border-amber-300/20 px-4 py-3"
                 >
                   <div className="flex min-w-0 flex-col">
                     <span className="truncate font-semibold">{u.name}</span>
@@ -120,31 +155,14 @@ export function AdminUsers({
                       {u.email}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      Daftar {formatDate(u.createdAt)}
+                      Daftar {formatDate(u.createdAt)} · minta peran{" "}
+                      <span className="font-semibold text-amber-200">
+                        {ROLE_LABEL[u.role]}
+                      </span>
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <label className="sr-only" htmlFor={`role-${u.id}`}>
-                      Peran untuk {u.name}
-                    </label>
-                    <select
-                      id={`role-${u.id}`}
-                      className={selectClass}
-                      value={chosen}
-                      disabled={busy}
-                      onChange={(e) =>
-                        setRoleChoice((prev) => ({
-                          ...prev,
-                          [u.id]: e.target.value as Role,
-                        }))
-                      }
-                    >
-                      {ROLE_OPTIONS.map((o) => (
-                        <option key={o.value} value={o.value}>
-                          {o.label}
-                        </option>
-                      ))}
-                    </select>
+                    <RoleSelect user={u} />
                     <Button
                       size="sm"
                       disabled={busy}
@@ -162,7 +180,9 @@ export function AdminUsers({
                       size="sm"
                       variant="destructive"
                       disabled={busy}
-                      onClick={() => send(u.id, "DELETE")}
+                      onClick={() =>
+                        send(u.id, "PATCH", { status: "REJECTED" })
+                      }
                     >
                       <X />
                       Tolak
@@ -175,9 +195,68 @@ export function AdminUsers({
         )}
       </section>
 
+      {rejected.length > 0 ? (
+        <section className="flex flex-col gap-3">
+          <h2 className="flex items-center gap-2 text-sm font-semibold tracking-tight text-muted-foreground">
+            <UserX className="size-4 text-destructive" />
+            Ditolak
+            <span className="rounded-full bg-destructive/20 px-2 py-0.5 text-[10px] font-bold text-destructive">
+              {rejected.length}
+            </span>
+          </h2>
+          <div className="flex flex-col gap-2">
+            {rejected.map((u) => {
+              const chosen = roleChoice[u.id] ?? u.role;
+              const busy = busyId === u.id;
+              return (
+                <Card
+                  key={u.id}
+                  className="flex flex-row flex-wrap items-center justify-between gap-3 border-destructive/25 px-4 py-3 opacity-90"
+                >
+                  <div className="flex min-w-0 flex-col">
+                    <span className="truncate font-semibold">{u.name}</span>
+                    <span className="truncate text-sm text-muted-foreground">
+                      {u.email}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      Daftar {formatDate(u.createdAt)} · pendaftaran ditolak
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <RoleSelect user={u} />
+                    <Button
+                      size="sm"
+                      disabled={busy}
+                      onClick={() =>
+                        send(u.id, "PATCH", {
+                          status: "APPROVED",
+                          role: chosen,
+                        })
+                      }
+                    >
+                      <RotateCcw />
+                      Setujui ulang
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      disabled={busy}
+                      onClick={() => send(u.id, "DELETE")}
+                    >
+                      <Trash2 />
+                      Hapus
+                    </Button>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
+
       <section className="flex flex-col gap-3">
         <h2 className="flex items-center gap-2 text-sm font-semibold tracking-tight text-muted-foreground">
-          <ShieldCheck className="size-4" />
+          <ShieldCheck className="size-4 text-emerald-300" />
           Akun aktif
           <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
             {approved.length}

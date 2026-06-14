@@ -4,15 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { QuizQuestionCard, QuizResultCard } from "@/components/quiz-ui";
 import type { QuizQuestion } from "@/lib/quiz";
 
 type QuizRunnerProps = {
@@ -97,87 +89,43 @@ export function QuizRunner({ deckId, deckTitle, questions }: QuizRunnerProps) {
   }, [finished, score, total, deckId]);
 
   if (finished) {
-    const percentage = Math.round((score / total) * 100);
     return (
-      <Card className="mx-auto w-full max-w-xl">
-        <CardHeader>
-          <CardTitle>Kuis selesai</CardTitle>
-          <CardDescription>{deckTitle}</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center gap-3 py-4">
-          <p className="text-5xl font-semibold tracking-tight">
-            {score} <span className="text-muted-foreground">/ {total}</span>
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Nilai kamu: <span className="font-medium">{percentage}%</span>
-          </p>
-          <p className="text-sm" aria-live="polite">
-            {save.status === "saving" ? "Menyimpan skor..." : null}
-            {save.status === "saved" ? "Skor tersimpan." : null}
-            {save.status === "error" ? (
-              <span className="text-destructive">{save.message}</span>
-            ) : null}
-          </p>
-        </CardContent>
-        <CardFooter className="flex items-center justify-end gap-2">
-          <Button asChild variant="outline">
+      <QuizResultCard
+        title={deckTitle}
+        score={score}
+        total={total}
+        status={
+          save.status === "saving" ? (
+            <span className="text-muted-foreground">Menyimpan skor...</span>
+          ) : save.status === "saved" ? (
+            <span className="text-emerald-300">Skor tersimpan di statistikmu.</span>
+          ) : save.status === "error" ? (
+            <span className="text-destructive">{save.message}</span>
+          ) : null
+        }
+        onRestart={restart}
+        backAction={
+          <Button asChild variant="outline" size="lg">
             <Link href={`/dashboard/decks/${deckId}`}>Kembali ke deck</Link>
           </Button>
-          <Button onClick={restart}>Ulangi kuis</Button>
-        </CardFooter>
-      </Card>
+        }
+      />
     );
   }
 
   return (
-    <Card className="mx-auto w-full max-w-xl">
-      <CardHeader>
-        <CardDescription>
-          Pertanyaan {index + 1} dari {total}
-        </CardDescription>
-        <CardTitle className="text-xl leading-snug">{current.front}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ul className="flex flex-col gap-2">
-          {current.choices.map((choice, i) => {
-            const answered = selected !== null;
-            const isCorrect = i === current.correctIndex;
-            const isSelected = i === selected;
-            return (
-              <li key={i}>
-                <button
-                  type="button"
-                  onClick={() => choose(i)}
-                  disabled={answered}
-                  aria-pressed={isSelected}
-                  className={cn(
-                    "flex w-full items-start gap-3 rounded-lg border bg-background px-4 py-3 text-left text-sm transition-colors",
-                    "hover:bg-muted disabled:cursor-not-allowed",
-                    answered && isCorrect &&
-                      "border-emerald-500 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-                    answered && isSelected && !isCorrect &&
-                      "border-destructive bg-destructive/10 text-destructive",
-                    !answered && "focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 outline-none"
-                  )}
-                >
-                  <span className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-md border bg-background text-xs font-medium">
-                    {String.fromCharCode(65 + i)}
-                  </span>
-                  <span className="whitespace-pre-wrap">{choice}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </CardContent>
-      <CardFooter className="flex items-center justify-between gap-2">
-        <p className="text-xs text-muted-foreground">
-          Skor sementara: {score} / {index + (selected !== null ? 1 : 0)}
-        </p>
-        <Button onClick={next} disabled={selected === null}>
-          {isLast ? "Lihat hasil" : "Berikutnya"}
-        </Button>
-      </CardFooter>
-    </Card>
+    <QuizQuestionCard
+      key={index}
+      index={index}
+      total={total}
+      question={current.front}
+      imageUrl={current.imageUrl}
+      choices={current.choices}
+      correctIndex={current.correctIndex}
+      selected={selected}
+      score={score}
+      onChoose={choose}
+      onNext={next}
+    />
   );
 }

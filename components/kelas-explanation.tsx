@@ -16,11 +16,12 @@ export function KelasExplanation({
   videoId: string;
   title: string;
 }) {
+  // State kembali ke "loading" lewat remount: pemanggil wajib memberi
+  // key={videoId} agar komponen ini di-reset saat pindah video.
   const [load, setLoad] = React.useState<LoadState>({ status: "loading" });
 
   React.useEffect(() => {
     let cancelled = false;
-    setLoad({ status: "loading" });
     fetch("/api/kelas/explain", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

@@ -7,7 +7,7 @@ export const AUTH_COOKIE = "bdd_token";
 const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
 const ROLES: readonly Role[] = ["SUPERADMIN", "GURU", "MURID"];
-const STATUSES: readonly Status[] = ["PENDING", "APPROVED"];
+const STATUSES: readonly Status[] = ["PENDING", "APPROVED", "REJECTED"];
 
 export type SessionPayload = {
   sub: string;

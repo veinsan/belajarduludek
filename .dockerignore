@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+.env*
+.claude
+.agents
+.impeccable
+skills-lock.json
+*.md
+npm-debug.log*
+public/uploads

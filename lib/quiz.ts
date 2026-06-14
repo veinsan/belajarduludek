@@ -5,11 +5,13 @@ export type QuizCard = {
   id: string;
   front: string;
   back: string;
+  imageUrl?: string | null;
 };
 
 export type QuizQuestion = {
   cardId: string;
   front: string;
+  imageUrl?: string | null;
   choices: string[];
   correctIndex: number;
 };
@@ -46,6 +48,7 @@ export function generateQuizQuestions(
     return {
       cardId: card.id,
       front: card.front,
+      imageUrl: card.imageUrl ?? null,
       choices,
       correctIndex: choices.indexOf(card.back),
     };

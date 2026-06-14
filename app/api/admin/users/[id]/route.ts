@@ -6,7 +6,7 @@ import { getSession } from "@/lib/auth";
 type RouteContext = { params: Promise<{ id: string }> };
 
 const ROLES: readonly Role[] = ["SUPERADMIN", "GURU", "MURID"];
-const STATUSES: readonly Status[] = ["PENDING", "APPROVED"];
+const STATUSES: readonly Status[] = ["PENDING", "APPROVED", "REJECTED"];
 
 type PatchBody = {
   role?: unknown;
@@ -100,14 +100,14 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
     );
   }
 
-  // Only pending (un-approved) accounts can be removed here — they carry no
-  // owned data, so the restrict-by-default FKs on Deck/Material/etc. won't trip.
+  // Only non-approved accounts can be removed here — they carry no owned
+  // data, so the restrict-by-default FKs on Deck/Material/etc. won't trip.
   const result = await prisma.user.deleteMany({
-    where: { id, status: "PENDING" },
+    where: { id, status: { not: "APPROVED" } },
   });
   if (result.count === 0) {
     return Response.json(
-      { error: "Hanya akun yang belum disetujui yang bisa ditolak." },
+      { error: "Hanya akun yang belum aktif yang bisa dihapus." },
       { status: 400 }
     );
   }

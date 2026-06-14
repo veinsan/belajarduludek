@@ -43,7 +43,7 @@ export default function NewMaterialPage() {
         setError(data.error ?? "Gagal menyimpan materi.");
         return;
       }
-      router.push("/dashboard/materials");
+      router.push(`/dashboard/materials/${data.material.id}`);
       router.refresh();
     } catch {
       setError("Tidak dapat terhubung ke server.");

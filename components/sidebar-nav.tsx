@@ -7,6 +7,7 @@ import {
   Home,
   Library,
   Monitor,
+  NotebookTabs,
   PencilLine,
   ShieldCheck,
   type LucideIcon,
@@ -22,6 +23,7 @@ type NavItem = {
 
 const items: NavItem[] = [
   { href: "/dashboard", label: "Home", icon: Home },
+  { href: "/dashboard/decks", label: "Deck", icon: NotebookTabs },
   { href: "/dashboard/kelas", label: "Kelas", icon: Monitor },
   { href: "/dashboard/gemini", label: "Gemini AI", icon: Bot },
   { href: "/dashboard/tryout", label: "Try Out", icon: PencilLine },

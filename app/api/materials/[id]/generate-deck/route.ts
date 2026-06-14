@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { materialAccessWhere } from "@/lib/access";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -15,8 +16,9 @@ export async function POST(_request: Request, { params }: RouteContext) {
   }
 
   const { id } = await params;
+  // Deck hasil generate jadi milik user yang meminta, materi cukup bisa diakses.
   const material = await prisma.material.findFirst({
-    where: { id, userId: session.sub },
+    where: { id, ...materialAccessWhere(session.sub) },
     select: { id: true, title: true, content: true, summary: true },
   });
   if (!material) {

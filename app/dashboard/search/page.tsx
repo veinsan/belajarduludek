@@ -11,6 +11,7 @@ import {
 
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { deckAccessWhere, materialAccessWhere } from "@/lib/access";
 import { Button } from "@/components/ui/button";
 import { SearchFilter } from "@/components/search-filter";
 
@@ -77,10 +78,14 @@ export default async function SearchPage({ searchParams }: PageProps) {
     q && wantDecks
       ? prisma.deck.findMany({
           where: {
-            userId: session.sub,
-            OR: [
-              { title: { contains: q, mode: "insensitive" } },
-              { description: { contains: q, mode: "insensitive" } },
+            AND: [
+              deckAccessWhere(session.sub),
+              {
+                OR: [
+                  { title: { contains: q, mode: "insensitive" } },
+                  { description: { contains: q, mode: "insensitive" } },
+                ],
+              },
             ],
           },
           orderBy: { createdAt: "desc" },
@@ -96,10 +101,14 @@ export default async function SearchPage({ searchParams }: PageProps) {
     q && wantMaterials
       ? prisma.material.findMany({
           where: {
-            userId: session.sub,
-            OR: [
-              { title: { contains: q, mode: "insensitive" } },
-              { content: { contains: q, mode: "insensitive" } },
+            AND: [
+              materialAccessWhere(session.sub),
+              {
+                OR: [
+                  { title: { contains: q, mode: "insensitive" } },
+                  { content: { contains: q, mode: "insensitive" } },
+                ],
+              },
             ],
           },
           orderBy: { createdAt: "desc" },

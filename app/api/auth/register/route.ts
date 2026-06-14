@@ -6,7 +6,12 @@ type RegisterBody = {
   email?: unknown;
   name?: unknown;
   password?: unknown;
+  role?: unknown;
 };
+
+// Pendaftar hanya boleh meminta peran murid/guru; SUPERADMIN diberikan manual.
+const REGISTERABLE_ROLES = ["MURID", "GURU"] as const;
+type RegisterableRole = (typeof REGISTERABLE_ROLES)[number];
 
 export async function POST(request: Request) {
   let body: RegisterBody;
@@ -23,6 +28,11 @@ export async function POST(request: Request) {
     typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   const name = typeof body.name === "string" ? body.name.trim() : "";
   const password = typeof body.password === "string" ? body.password : "";
+  const role: RegisterableRole =
+    typeof body.role === "string" &&
+    REGISTERABLE_ROLES.includes(body.role as RegisterableRole)
+      ? (body.role as RegisterableRole)
+      : "MURID";
 
   if (!email || !name || !password) {
     return Response.json(
@@ -52,13 +62,18 @@ export async function POST(request: Request) {
   }
 
   const hashed = await bcrypt.hash(password, 10);
+  // Status mengikuti default skema (PENDING) — akun baru harus
+  // disetujui SUPERADMIN dulu sebelum bisa login.
   await prisma.user.create({
-    data: { email, name, password: hashed, status: "APPROVED" },
+    data: { email, name, password: hashed, role },
     select: { id: true },
   });
 
   return Response.json(
-    { message: "Akun berhasil dibuat. Silakan login." },
+    {
+      message:
+        "Akun berhasil dibuat! Tunggu persetujuan admin dulu ya, setelah itu kamu bisa masuk.",
+    },
     { status: 201 }
   );
 }

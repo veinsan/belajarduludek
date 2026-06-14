@@ -2,17 +2,17 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { QuizQuestionCard, QuizResultCard } from "@/components/quiz-ui";
 
 type MaterialQuestion = {
   question: string;
@@ -70,20 +70,34 @@ export function MaterialQuizRunner({
 
   if (load.status === "loading") {
     return (
-      <Card className="mx-auto w-full max-w-xl">
-        <CardHeader>
-          <CardTitle>Menyiapkan kuis...</CardTitle>
-          <CardDescription>
-            AI sedang membuat pertanyaan dari materimu.
-          </CardDescription>
-        </CardHeader>
+      <Card className="liquid-card mx-auto w-full max-w-xl gap-5 overflow-hidden rounded-[1.35rem] pt-0">
+        <div className="h-1.5 w-full overflow-hidden bg-elevated">
+          <div className="animate-progress h-full rounded-r-full bg-gradient-to-r from-primary to-accent" />
+        </div>
+        <div className="flex flex-col gap-4 px-6 pb-6">
+          <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-primary-light">
+            <Sparkles className="size-3.5 animate-pulse" />
+            AI sedang membuat soal dari materimu
+          </p>
+          {/* Skeleton mengikuti bentuk kartu pertanyaan */}
+          <div className="h-7 w-4/5 animate-pulse rounded-lg bg-elevated" />
+          <div className="flex flex-col gap-2.5 pt-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-12 w-full animate-pulse rounded-xl bg-elevated"
+                style={{ animationDelay: `${i * 120}ms` }}
+              />
+            ))}
+          </div>
+        </div>
       </Card>
     );
   }
 
   if (load.status === "error") {
     return (
-      <Card className="mx-auto w-full max-w-xl">
+      <Card className="liquid-card mx-auto w-full max-w-xl rounded-[1.35rem]">
         <CardHeader>
           <CardTitle>Gagal memuat kuis</CardTitle>
           <CardDescription>{load.message}</CardDescription>
@@ -128,88 +142,35 @@ export function MaterialQuizRunner({
   }
 
   if (finished) {
-    const percentage = Math.round((score / total) * 100);
     return (
-      <Card className="mx-auto w-full max-w-xl">
-        <CardHeader>
-          <CardTitle>Kuis selesai</CardTitle>
-          <CardDescription>{materialTitle}</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center gap-3 py-4">
-          <p className="text-5xl font-semibold tracking-tight">
-            {score} <span className="text-muted-foreground">/ {total}</span>
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Nilai kamu: <span className="font-medium">{percentage}%</span>
-          </p>
-        </CardContent>
-        <CardFooter className="flex items-center justify-end gap-2">
-          <Button asChild variant="outline">
+      <QuizResultCard
+        title={materialTitle}
+        score={score}
+        total={total}
+        onRestart={restart}
+        backAction={
+          <Button asChild variant="outline" size="lg">
             <Link href={`/dashboard/materials/${materialId}`}>
               Kembali ke materi
             </Link>
           </Button>
-          <Button onClick={restart}>Ulangi kuis</Button>
-        </CardFooter>
-      </Card>
+        }
+      />
     );
   }
 
   return (
-    <Card className="mx-auto w-full max-w-xl">
-      <CardHeader>
-        <CardDescription>
-          Pertanyaan {index + 1} dari {total}
-        </CardDescription>
-        <CardTitle className="text-xl leading-snug">
-          {current.question}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ul className="flex flex-col gap-2">
-          {current.choices.map((choice, i) => {
-            const answered = selected !== null;
-            const isCorrect = i === current.correctIndex;
-            const isSelected = i === selected;
-            return (
-              <li key={i}>
-                <button
-                  type="button"
-                  onClick={() => choose(i)}
-                  disabled={answered}
-                  aria-pressed={isSelected}
-                  className={cn(
-                    "flex w-full items-start gap-3 rounded-lg border bg-background px-4 py-3 text-left text-sm transition-colors",
-                    "hover:bg-muted disabled:cursor-not-allowed",
-                    answered &&
-                      isCorrect &&
-                      "border-emerald-500 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-                    answered &&
-                      isSelected &&
-                      !isCorrect &&
-                      "border-destructive bg-destructive/10 text-destructive",
-                    !answered &&
-                      "focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 outline-none"
-                  )}
-                >
-                  <span className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-md border bg-background text-xs font-medium">
-                    {String.fromCharCode(65 + i)}
-                  </span>
-                  <span className="whitespace-pre-wrap">{choice}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </CardContent>
-      <CardFooter className="flex items-center justify-between gap-2">
-        <p className="text-xs text-muted-foreground">
-          Skor sementara: {score} / {index + (selected !== null ? 1 : 0)}
-        </p>
-        <Button onClick={next} disabled={selected === null}>
-          {isLast ? "Lihat hasil" : "Berikutnya"}
-        </Button>
-      </CardFooter>
-    </Card>
+    <QuizQuestionCard
+      key={index}
+      index={index}
+      total={total}
+      question={current.question}
+      choices={current.choices}
+      correctIndex={current.correctIndex}
+      selected={selected}
+      score={score}
+      onChoose={choose}
+      onNext={next}
+    />
   );
 }
