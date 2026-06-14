@@ -12,6 +12,13 @@ export async function POST(_request: Request, { params }: RouteContext) {
     return Response.json({ error: "Tidak terautentikasi." }, { status: 401 });
   }
 
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return Response.json(
+      { error: "ANTHROPIC_API_KEY belum dikonfigurasi." },
+      { status: 500 }
+    );
+  }
+
   const { id } = await params;
   // Murid boleh memicu ringkasan AI pada materi guru, bukan hanya miliknya.
   const material = await prisma.material.findFirst({

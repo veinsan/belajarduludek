@@ -15,6 +15,13 @@ export async function POST(_request: Request, { params }: RouteContext) {
     return Response.json({ error: "Tidak terautentikasi." }, { status: 401 });
   }
 
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return Response.json(
+      { error: "ANTHROPIC_API_KEY belum dikonfigurasi." },
+      { status: 500 }
+    );
+  }
+
   const { id } = await params;
   // Deck hasil generate jadi milik user yang meminta, materi cukup bisa diakses.
   const material = await prisma.material.findFirst({
